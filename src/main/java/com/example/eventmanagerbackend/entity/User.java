@@ -18,8 +18,8 @@ public class User {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "login")
-    private String login;
+    @Column(name = "username")
+    private String username;
 
     @Column(name = "password")
     private String password;

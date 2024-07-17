@@ -25,7 +25,7 @@ public class Event {
     private String eventSummary;
 
     @Column(name = "event_date")
-    private Date eventDate;
+    private Instant eventDate;
 
     @Column(name = "reg_open")
     private Boolean regOpen;
