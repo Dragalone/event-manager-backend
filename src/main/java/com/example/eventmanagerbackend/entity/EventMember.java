@@ -1,12 +1,13 @@
 package com.example.eventmanagerbackend.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.ToString;
 
 import java.util.UUID;
-
+@Data
+@Entity
+@Table(name = "event_members")
 public class EventMember {
 
     @Id
@@ -14,30 +15,32 @@ public class EventMember {
     @Column(name = "id")
     private UUID id;
 
-        @Column(name = "firstname")
-        private String firstname;
+    @Column(name = "firstname")
+    private String firstname;
 
-        @Column(name = "middlename")
-        private String middlename;
+    @Column(name = "middlename")
+    private String middlename;
 
-        @Column(name = "lastname")
-        private String lastname;
+    @Column(name = "lastname")
+    private String lastname;
 
-        @Column(name = "company")
-        private String company;
+    @Column(name = "company")
+    private String company;
 
-        @Column(name = "position")
-        private String position;
+    @Column(name = "position")
+    private String position;
 
-        @Column(name = "email")
-        private String email;
+    @Column(name = "email")
+    private String email;
 
-        @Column(name = "phone")
-        private String phone;
+    @Column(name = "phone")
+    private String phone;
 
-        @Column(name = "approved")
-        private Boolean approved;
+    @Column(name = "approved")
+    private Boolean approved;
 
-    @Column(name = "event_id")
-    private UUID eventId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id")
+    @ToString.Exclude
+    private Event event;
 }

@@ -8,12 +8,9 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.UUID;
 
-public interface UserService extends EntityService<User, UUID> {
+public interface UserService extends EntityService<UserResponse,UpsertUserRequest, UUID> {
     UserResponse findByUsername(String username);
 
-    UserResponse createUser(UpsertUserRequest request);
-
     boolean existsByUsername(String username);
-
 
 }

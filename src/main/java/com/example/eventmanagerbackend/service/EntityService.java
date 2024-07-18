@@ -3,15 +3,17 @@ package com.example.eventmanagerbackend.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface EntityService<E, ID> {
+import java.util.List;
 
-    Page<E> findAll(Pageable pageable);
+public interface EntityService<E, R, ID> {
+
+    List<E> findAll(Pageable pageable);
 
     E findById(ID id);
 
-    E save(E entity);
+    E create(R entityRequest);
 
-    E update(ID id, E entity);
+    E update(ID id, R entityRequest);
 
     void deleteById(ID id);
 

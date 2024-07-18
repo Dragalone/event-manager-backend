@@ -37,4 +37,5 @@ public class UpsertEventRequest {
     @NotNull
     private Instant closeRegistrationDate;
 
+    private UUID organizerId;
 }

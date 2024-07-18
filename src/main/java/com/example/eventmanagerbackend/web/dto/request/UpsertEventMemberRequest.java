@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -34,4 +36,6 @@ public class UpsertEventMemberRequest {
     @NotNull
     private Boolean approved;
 
+    @NotNull
+    private UUID eventId;
 }

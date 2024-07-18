@@ -16,7 +16,7 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "event_id")
-    private UUID eventId;
+    private UUID id;
 
     @Column(name = "event_name")
     private String eventName;

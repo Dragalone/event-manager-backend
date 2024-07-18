@@ -6,10 +6,6 @@ import com.example.eventmanagerbackend.web.dto.response.EventResponse;
 
 import java.util.UUID;
 
-public interface EventService extends EntityService<Event, UUID> {
-
-    EventResponse createEvent(UpsertEventRequest request, UUID organizer);
-
-
+public interface EventService extends EntityService<EventResponse,UpsertEventRequest, UUID> {
 
 }

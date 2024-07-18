@@ -25,11 +25,14 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-mail")
 
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
 
     runtimeOnly("org.postgresql:postgresql")
-    implementation("org.projectlombok:lombok")
+
 
     implementation("org.apache.poi:poi-ooxml:5.2.5")
     implementation("org.apache.poi:poi:5.2.5")
@@ -42,7 +45,6 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
 
-    compileOnly("org.projectlombok:lombok")
 
     implementation("io.jsonwebtoken:jjwt:0.12.5")
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
