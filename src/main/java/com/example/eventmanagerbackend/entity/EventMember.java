@@ -36,8 +36,9 @@ public class EventMember {
     @Column(name = "phone")
     private String phone;
 
-    @Column(name = "approved")
-    private Boolean approved;
+    @Column(name = "approvement")
+    @Enumerated(EnumType.STRING)
+    private Approvement approvement;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")

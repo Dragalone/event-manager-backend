@@ -16,5 +16,6 @@ import org.mapstruct.ReportingPolicy;
 public interface EventMapper {
     Event upsertRequestToEvent(UpsertEventRequest request);
 
+
     EventResponse eventToResponse(Event event);
 }

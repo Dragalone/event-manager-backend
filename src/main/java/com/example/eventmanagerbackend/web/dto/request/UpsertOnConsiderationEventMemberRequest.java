@@ -1,17 +1,16 @@
 package com.example.eventmanagerbackend.web.dto.request;
 
-import com.example.eventmanagerbackend.entity.Approvement;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpsertEventMemberRequest {
+public class UpsertOnConsiderationEventMemberRequest {
+
 
     @NotNull
     private String firstname;
@@ -35,8 +34,6 @@ public class UpsertEventMemberRequest {
     private String phone;
 
     @NotNull
-    private Approvement approvement;
-
-    @NotNull
     private UUID eventId;
+
 }

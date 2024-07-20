@@ -1,18 +1,23 @@
 package com.example.eventmanagerbackend.service.impl;
 
+import com.example.eventmanagerbackend.entity.RoleType;
 import com.example.eventmanagerbackend.entity.User;
 import com.example.eventmanagerbackend.exception.AlreadyExistsException;
 import com.example.eventmanagerbackend.exception.EntityNotFoundException;
 import com.example.eventmanagerbackend.mapper.UserMapper;
+import com.example.eventmanagerbackend.repository.RoleTypeRepository;
 import com.example.eventmanagerbackend.repository.UserRepository;
 
 import com.example.eventmanagerbackend.service.UserService;
+import com.example.eventmanagerbackend.web.dto.request.UpsertDefaultUserRequest;
 import com.example.eventmanagerbackend.web.dto.request.UpsertUserRequest;
 import com.example.eventmanagerbackend.web.dto.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,9 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.text.MessageFormat;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +42,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository repository;
 
+    private final RoleTypeRepository roleTypeRepository;
 
     @Override
     @Transactional
@@ -52,7 +56,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList())
         );
     }
-
 
     @Override
     public UserResponse findByUsername(String username) {
@@ -84,6 +87,24 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 )));
     }
 
+    @Override
+    public UserResponse createDefaultUser(UpsertDefaultUserRequest upsertDefaultUserRequest) {
+        log.info("Create default user {}",upsertDefaultUserRequest);
+        if (repository.existsByUsername(upsertDefaultUserRequest.getUsername())){
+            throw new AlreadyExistsException(
+                    MessageFormat.format("User with username {0} already exists!",  upsertDefaultUserRequest.getUsername())
+            );
+        }
+
+        RoleType userRole = roleTypeRepository.findByName("ROLE_USER")
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+
+        User user = new User();
+        user.setUsername(upsertDefaultUserRequest.getUsername());
+        user.setPassword(passwordEncoder.encode(upsertDefaultUserRequest.getPassword()));
+        user.setRoles(Collections.singletonList(userRole));
+        return userMapper.userToResponse(repository.save(user));
+    }
 
     @Override
     public UserResponse create(UpsertUserRequest entityRequest) {
@@ -93,13 +114,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                     MessageFormat.format("User with username {0} already exists!",  entityRequest.getUsername())
             );
         }
+
         User user = new User();
         user.setUsername(entityRequest.getUsername());
         user.setPassword(passwordEncoder.encode(entityRequest.getPassword()));
         user.setRoles(entityRequest.getRoles());
         return userMapper.userToResponse(repository.save(user));
     }
-
 
     @Override
     public UserResponse update(UUID id, UpsertUserRequest entityRequest) {
@@ -120,7 +141,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         log.info("Delete user with ID: {}", id);
         repository.deleteById(id);
     }
-
 
     protected User updateFields(User oldEntity, User newEntity) {
         if (!Objects.equals(oldEntity.getUsername(), newEntity.getUsername()) && existsByUsername(newEntity.getUsername())) {

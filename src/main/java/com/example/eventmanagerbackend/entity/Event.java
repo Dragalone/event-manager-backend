@@ -5,7 +5,9 @@ import lombok.Data;
 import lombok.ToString;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -15,17 +17,16 @@ public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "event_id")
     private UUID id;
 
-    @Column(name = "event_name")
-    private String eventName;
+    @Column(name = "name")
+    private String name;
 
-    @Column(name = "event_summary")
-    private String eventSummary;
+    @Column(name = "summary")
+    private String summary;
 
-    @Column(name = "event_date")
-    private Instant eventDate;
+    @Column(name = "date")
+    private Instant date;
 
     @Column(name = "reg_open")
     private Boolean regOpen;
@@ -43,5 +44,9 @@ public class Event {
     @JoinColumn(name = "organizer_id")
     @ToString.Exclude
     private User organizer;
+
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private List<EventMember> eventMembers = new ArrayList<>();
 }
 

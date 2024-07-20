@@ -4,10 +4,12 @@ import com.example.eventmanagerbackend.exception.AccessDeniedException;
 import com.example.eventmanagerbackend.exception.AlreadyExistsException;
 import com.example.eventmanagerbackend.exception.EntityNotFoundException;
 import com.example.eventmanagerbackend.web.dto.response.ErrorResponse;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.validation.BindingResult;
 
 
@@ -45,7 +47,7 @@ public class GlobalControllerExceptionHandler {
 
     @ExceptionHandler(AlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> alreadyExists(AlreadyExistsException ex) {
-        log.error("Error trying to create or update entity", ex);
+        log.error("Authentication is required to access this resource.", ex);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(ex.getMessage()));
@@ -63,6 +65,17 @@ public class GlobalControllerExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(errorMessage));
+    }
+
+
+    @ExceptionHandler(InsufficientAuthenticationException.class)
+    public ResponseEntity<String> handleInsufficientAuthenticationException(InsufficientAuthenticationException ex) {
+        return new ResponseEntity<>("Authentication is required to access this resource.", HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<String> handleExpiredJwtException(ExpiredJwtException ex) {
+        return new ResponseEntity<>("JWT expired: " + ex.getMessage(), HttpStatus.EXPECTATION_FAILED);
     }
 
 }

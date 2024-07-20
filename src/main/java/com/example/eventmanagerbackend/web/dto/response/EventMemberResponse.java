@@ -1,5 +1,6 @@
 package com.example.eventmanagerbackend.web.dto.response;
 
+import com.example.eventmanagerbackend.entity.Approvement;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,7 +33,7 @@ public class EventMemberResponse {
 
     private String phone;
 
-    private Boolean approved;
+    private Approvement approvement;
 
     private UUID eventId;
 

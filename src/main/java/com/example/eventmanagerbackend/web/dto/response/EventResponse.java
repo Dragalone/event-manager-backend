@@ -15,13 +15,13 @@ import java.util.UUID;
 @AllArgsConstructor
 public class EventResponse {
 
-    private UUID eventId;
+    private UUID id;
 
-    private String eventName;
+    private String name;
 
-    private String eventSummary;
+    private String summary;
 
-    private Instant eventDate;
+    private Instant date;
 
     private Boolean regOpen;
 
@@ -32,4 +32,5 @@ public class EventResponse {
     private Instant closeRegistrationDate;
 
     private UserResponse organizer;
+
 }

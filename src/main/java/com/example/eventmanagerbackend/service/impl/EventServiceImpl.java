@@ -1,5 +1,6 @@
 package com.example.eventmanagerbackend.service.impl;
 
+import com.example.eventmanagerbackend.entity.Approvement;
 import com.example.eventmanagerbackend.entity.Event;
 import com.example.eventmanagerbackend.entity.User;
 import com.example.eventmanagerbackend.exception.AlreadyExistsException;
@@ -81,8 +82,8 @@ public class EventServiceImpl implements EventService {
         if (StringUtils.hasText(newEntity.getAddress())){
             oldEntity.setAddress(newEntity.getAddress());
         }
-        if (newEntity.getEventDate()!=null){
-            oldEntity.setEventDate(newEntity.getEventDate());
+        if (newEntity.getDate()!=null){
+            oldEntity.setDate(newEntity.getDate());
         }
         if (newEntity.getCloseRegistrationDate()!=null){
             oldEntity.setCloseRegistrationDate(newEntity.getCloseRegistrationDate());
@@ -90,11 +91,11 @@ public class EventServiceImpl implements EventService {
         if (newEntity.getStartRegistrationDate()!=null){
             oldEntity.setStartRegistrationDate(newEntity.getStartRegistrationDate());
         }
-        if (StringUtils.hasText(newEntity.getEventSummary())){
-            oldEntity.setEventSummary(newEntity.getEventSummary());
+        if (StringUtils.hasText(newEntity.getSummary())){
+            oldEntity.setSummary(newEntity.getSummary());
         }
-        if (StringUtils.hasText(newEntity.getEventName())){
-            oldEntity.setEventName(newEntity.getEventName());
+        if (StringUtils.hasText(newEntity.getName())){
+            oldEntity.setName(newEntity.getName());
         }
         if (newEntity.getRegOpen()!=null){
             oldEntity.setRegOpen(newEntity.getRegOpen());
@@ -103,6 +104,14 @@ public class EventServiceImpl implements EventService {
             oldEntity.setOrganizer(newEntity.getOrganizer());
         }
         return oldEntity;
+    }
+
+    @Override
+    public List<EventResponse> findAllByOrganizerId(UUID orgId, Pageable pageable) {
+        log.info("Find all events by organizer id: {}",orgId);
+        return repository.findAllByOrganizerId(orgId, pageable)
+                .stream().map(eventMapper::eventToResponse)
+                .toList();
     }
 
 

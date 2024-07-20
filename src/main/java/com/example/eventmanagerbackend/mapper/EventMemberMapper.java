@@ -4,6 +4,7 @@ package com.example.eventmanagerbackend.mapper;
 import com.example.eventmanagerbackend.entity.EventMember;
 import com.example.eventmanagerbackend.web.dto.request.UpsertEventMemberRequest;
 
+import com.example.eventmanagerbackend.web.dto.request.UpsertOnConsiderationEventMemberRequest;
 import com.example.eventmanagerbackend.web.dto.response.EventMemberResponse;
 
 import org.mapstruct.*;
@@ -15,7 +16,7 @@ import org.mapstruct.*;
 )
 public interface EventMemberMapper {
     EventMember upsertRequestToEventMember(UpsertEventMemberRequest request);
-
+    EventMember notApprovedUpsertRequestToEventMember(UpsertOnConsiderationEventMemberRequest request);
     @Mapping(source = "event.id", target = "eventId")
     EventMemberResponse eventMemberToResponse(EventMember eventMember);
 

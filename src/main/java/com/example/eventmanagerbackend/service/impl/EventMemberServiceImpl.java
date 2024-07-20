@@ -1,20 +1,23 @@
 package com.example.eventmanagerbackend.service.impl;
 
 
+import com.example.eventmanagerbackend.entity.Approvement;
 import com.example.eventmanagerbackend.entity.EventMember;
 import com.example.eventmanagerbackend.exception.EntityNotFoundException;
-import com.example.eventmanagerbackend.mapper.EventMapper;
+import com.example.eventmanagerbackend.exception.RegistrationClosedException;
 import com.example.eventmanagerbackend.mapper.EventMemberMapper;
 import com.example.eventmanagerbackend.repository.EventMemberRepository;
 
 import com.example.eventmanagerbackend.service.EventMemberService;
 
 import com.example.eventmanagerbackend.web.dto.request.UpsertEventMemberRequest;
-import com.example.eventmanagerbackend.web.dto.request.UpsertEventRequest;
+import com.example.eventmanagerbackend.web.dto.request.UpsertOnConsiderationEventMemberRequest;
 import com.example.eventmanagerbackend.web.dto.response.EventMemberResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -53,8 +56,27 @@ public class EventMemberServiceImpl implements EventMemberService {
     public EventMemberResponse create(UpsertEventMemberRequest entityRequest) {
         log.info("Create event member {}",entityRequest);
         EventMember eventMember = eventMemberMapper.upsertRequestToEventMember(entityRequest);
+        if (!eventMember.getEvent().getRegOpen()) {
+            throw new RegistrationClosedException(
+                    MessageFormat.format("Registration on event {0} closed!",eventMember.getEvent().getName())
+            );
+        }
         return eventMemberMapper.eventMemberToResponse(
                 repository.save(eventMemberMapper.upsertRequestToEventMember(entityRequest))
+        );
+    }
+    @Override
+    public EventMemberResponse createMemberOnConsideration(UpsertOnConsiderationEventMemberRequest entityRequest) {
+        log.info("Create event member on consideration {}",entityRequest);
+        EventMember eventMember = eventMemberMapper.notApprovedUpsertRequestToEventMember(entityRequest);
+        if (!eventMember.getEvent().getRegOpen()) {
+            throw new RegistrationClosedException(
+                    MessageFormat.format("Registration on event {0} closed!",eventMember.getEvent().getName())
+            );
+        }
+        eventMember.setApprovement(Approvement.CONSIDERATION);
+        return eventMemberMapper.eventMemberToResponse(
+                repository.save(eventMember)
         );
     }
 
@@ -105,9 +127,22 @@ public class EventMemberServiceImpl implements EventMemberService {
         if (newEntity.getEvent()!=null){
             oldEntity.setEvent(newEntity.getEvent());
         }
-        if (newEntity.getApproved()!=null){
-            oldEntity.setApproved(newEntity.getApproved());
+        if (newEntity.getApprovement()!=null){
+            oldEntity.setApprovement(newEntity.getApprovement());
         }
         return oldEntity;
     }
+
+
+    @Override
+    public void setApprovment(UUID id, Approvement approvement) {
+        log.info("Set {} approvment for member with id: {}", approvement, id);
+        EventMember member = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        MessageFormat.format("Event member with ID {0} not found!", id)
+                ));
+        member.setApprovement(approvement);
+        repository.save(member);
+    }
+
 }

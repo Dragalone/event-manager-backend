@@ -1,5 +1,6 @@
 package com.example.eventmanagerbackend.repository;
 
+import com.example.eventmanagerbackend.entity.Approvement;
 import com.example.eventmanagerbackend.entity.EventMember;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -14,6 +15,6 @@ public interface EventMemberRepository extends JpaRepository<EventMember, UUID> 
 
     Page<EventMember> findAllByEventId(UUID eventId, Pageable pageable);
 
-    Page<EventMember> findByEventIdAndApproved(UUID eventId, Boolean approved, Pageable pageable);
+    Page<EventMember> findByEventIdAndApprovement(UUID eventId, Approvement approvement, Pageable pageable);
 
 }
