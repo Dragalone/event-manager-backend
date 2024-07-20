@@ -8,7 +8,9 @@ import com.example.eventmanagerbackend.exception.EntityNotFoundException;
 import com.example.eventmanagerbackend.mapper.EventMapper;
 import com.example.eventmanagerbackend.repository.EventRepository;
 
+import com.example.eventmanagerbackend.repository.EventSpecification;
 import com.example.eventmanagerbackend.service.EventService;
+import com.example.eventmanagerbackend.web.dto.request.EventFilterRequest;
 import com.example.eventmanagerbackend.web.dto.request.UpsertEventRequest;
 import com.example.eventmanagerbackend.web.dto.response.EventResponse;
 import lombok.RequiredArgsConstructor;
@@ -111,6 +113,16 @@ public class EventServiceImpl implements EventService {
         log.info("Find all events by organizer id: {}",orgId);
         return repository.findAllByOrganizerId(orgId, pageable)
                 .stream().map(eventMapper::eventToResponse)
+                .toList();
+    }
+
+    @Override
+    public List<EventResponse> filterBy(EventFilterRequest filter) {
+        log.info("Find events with filter: {}",filter);
+        return repository.findAll(EventSpecification.withFilter(filter),
+                        filter.getPagination().pageRequest())
+                .stream()
+                .map(eventMapper::eventToResponse)
                 .toList();
     }
 

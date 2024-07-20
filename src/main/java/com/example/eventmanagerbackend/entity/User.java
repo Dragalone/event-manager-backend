@@ -5,12 +5,14 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.FieldNameConstants;
 
 import java.util.*;
 
 @Data
 @Entity
 @Table(name = "users")
+@FieldNameConstants
 public class User {
 
     @Id

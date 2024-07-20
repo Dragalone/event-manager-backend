@@ -3,11 +3,13 @@ package com.example.eventmanagerbackend.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
+import lombok.experimental.FieldNameConstants;
 
 import java.util.UUID;
 @Data
 @Entity
 @Table(name = "event_members")
+@FieldNameConstants
 public class EventMember {
 
     @Id

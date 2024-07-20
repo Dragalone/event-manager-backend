@@ -43,3 +43,5 @@ logging:
       springframework:
         web: DEBUG
         security: DEBUG
+
+interval-delete-event-cron: 0 * * * * * # секунда минута час день месяца, месяц, день недели, год

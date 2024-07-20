@@ -3,6 +3,7 @@ package com.example.eventmanagerbackend.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
+import lombok.experimental.FieldNameConstants;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name = "events")
+@FieldNameConstants
 public class Event {
 
     @Id

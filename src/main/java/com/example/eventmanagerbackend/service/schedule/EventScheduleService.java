@@ -1,4 +1,4 @@
-package com.example.eventmanagerbackend.service.Shedule;
+package com.example.eventmanagerbackend.service.schedule;
 
 import com.example.eventmanagerbackend.entity.Event;
 import com.example.eventmanagerbackend.repository.EventRepository;
@@ -30,13 +30,13 @@ public class EventScheduleService {
 
         List<Event> updatedEvents = events.stream()
                 .peek(event -> {
-                    //  LocalDate eventEnd = event.getEndRegistration().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    //   LocalDate eventStart = event.getStartRegistration().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    LocalDate eventEnd = event.getDate().atZone(ZoneId.systemDefault()).toLocalDate();
+                      LocalDate eventEnd = event.getCloseRegistrationDate().atZone(ZoneId.systemDefault()).toLocalDate();
+                       LocalDate eventStart = event.getStartRegistrationDate().atZone(ZoneId.systemDefault()).toLocalDate();
+                    //LocalDate eventEnd = event.getDate().atZone(ZoneId.systemDefault()).toLocalDate();
 
                     if (event.getRegOpen() && currentDate.isAfter(eventEnd)) {//!!!!!
                         event.setRegOpen(false);
-                    } else if (!event.getRegOpen() && currentDate.isBefore(eventEnd)) {
+                    } else if (!event.getRegOpen() && currentDate.isBefore(eventStart)) {
                         event.setRegOpen(true);
                     }
                 })
