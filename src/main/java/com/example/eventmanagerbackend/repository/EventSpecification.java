@@ -18,7 +18,17 @@ public interface EventSpecification {
         return Specification.where(byName(filter.getName()))
                 .and(byLowerDateLimit(filter.getLowerDateLimit()))
                 .and((byHigherDateLimit(filter.getHigherDateLimit())))
-                .and(byOrgId(filter.getOrgId()));
+                .and(byOrgId(filter.getOrgId()))
+                .and(byRegOpen(filter.getRegOpen()));
+    }
+
+    static Specification<Event> byRegOpen(Boolean regOpen){
+        return (root, query, criteriaBuilder) -> {
+            if (regOpen == null){
+                return null;
+            }
+            return criteriaBuilder.equal(root.get(Event.Fields.regOpen),regOpen);
+        };
     }
 
     static Specification<Event> byOrgId(UUID orgId){

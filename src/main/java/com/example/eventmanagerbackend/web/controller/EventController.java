@@ -30,12 +30,13 @@ public class EventController {
     private final EventService eventService;
 
     @GetMapping
-    public ResponseEntity<ModelListResponse<EventResponse>> filterBy(@Valid PaginationRequest pageRequest,
+    public ResponseEntity<ModelListResponse<EventResponse>> filterBy(@Valid PaginationRequest paginationRequest,
                                                                      @Nullable @RequestParam String name,
                                                                      @Nullable @RequestParam Instant lowerDateLimit,
                                                                      @Nullable @RequestParam Instant higherDateLimit,
+                                                                     @Nullable @RequestParam Boolean regOpen,
                                                                      @Nullable @RequestParam UUID orgId) {
-        EventFilterRequest filter = new EventFilterRequest(pageRequest, name, lowerDateLimit, higherDateLimit, orgId);
+        EventFilterRequest filter = new EventFilterRequest(paginationRequest, name, lowerDateLimit, higherDateLimit,regOpen, orgId);
         List<EventResponse> events = eventService.filterBy(filter);
         return ResponseEntity.ok(
                 ModelListResponse.<EventResponse>builder()

@@ -2,19 +2,18 @@ package com.example.eventmanagerbackend.web.controller;
 
 import com.example.eventmanagerbackend.entity.Approvement;
 import com.example.eventmanagerbackend.service.EventMemberService;
-import com.example.eventmanagerbackend.web.dto.request.PaginationRequest;
-import com.example.eventmanagerbackend.web.dto.request.UpsertEventMemberRequest;
-import com.example.eventmanagerbackend.web.dto.request.UpsertEventRequest;
-import com.example.eventmanagerbackend.web.dto.request.UpsertOnConsiderationEventMemberRequest;
+import com.example.eventmanagerbackend.web.dto.request.*;
 import com.example.eventmanagerbackend.web.dto.response.EventMemberResponse;
 import com.example.eventmanagerbackend.web.dto.response.EventResponse;
 import com.example.eventmanagerbackend.web.dto.response.ModelListResponse;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,8 +26,12 @@ public class EventMemberController {
     private final EventMemberService eventMemberService;
 
     @GetMapping
-    public ResponseEntity<ModelListResponse<EventMemberResponse>> getAllEventMembers(@Valid PaginationRequest pageRequest){
-        List<EventMemberResponse> eventMembers = eventMemberService.findAll(pageRequest.pageRequest());
+    public ResponseEntity<ModelListResponse<EventMemberResponse>> filterBy(@Valid PaginationRequest paginationRequest,
+                                                                     @Nullable @RequestParam String searchQuery,
+                                                                     @Nullable @RequestParam Approvement approvement,
+                                                                     @Nullable @RequestParam UUID eventId) {
+        EventMemberFilterRequest filter = new EventMemberFilterRequest(paginationRequest,searchQuery,approvement,eventId);
+        List<EventMemberResponse> eventMembers = eventMemberService.filterBy(filter);
         return ResponseEntity.ok(
                 ModelListResponse.<EventMemberResponse>builder()
                         .totalCount((long) eventMembers.size())

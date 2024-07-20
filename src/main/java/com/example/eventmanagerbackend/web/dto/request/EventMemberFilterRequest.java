@@ -6,24 +6,20 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventFilterRequest {
+public class EventMemberFilterRequest {
 
     @NotNull
     private PaginationRequest pagination;
 
-    private String name;
+    private String searchQuery;
 
-    private Instant lowerDateLimit;
+    private Approvement approvement;
 
-    private Instant higherDateLimit;
+    private UUID eventId;
 
-    private Boolean regOpen;
-
-    private UUID orgId;
 }

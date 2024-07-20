@@ -8,11 +8,16 @@ import com.example.eventmanagerbackend.exception.RegistrationClosedException;
 import com.example.eventmanagerbackend.mapper.EventMemberMapper;
 import com.example.eventmanagerbackend.repository.EventMemberRepository;
 
+import com.example.eventmanagerbackend.repository.EventMemberSpecification;
+import com.example.eventmanagerbackend.repository.EventSpecification;
 import com.example.eventmanagerbackend.service.EventMemberService;
 
+import com.example.eventmanagerbackend.web.dto.request.EventFilterRequest;
+import com.example.eventmanagerbackend.web.dto.request.EventMemberFilterRequest;
 import com.example.eventmanagerbackend.web.dto.request.UpsertEventMemberRequest;
 import com.example.eventmanagerbackend.web.dto.request.UpsertOnConsiderationEventMemberRequest;
 import com.example.eventmanagerbackend.web.dto.response.EventMemberResponse;
+import com.example.eventmanagerbackend.web.dto.response.EventResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +39,18 @@ public class EventMemberServiceImpl implements EventMemberService {
     private final EventMemberMapper eventMemberMapper;
 
     private final EventMemberRepository repository;
+
+
+
+    @Override
+    public List<EventMemberResponse> filterBy(EventMemberFilterRequest filter) {
+        log.info("Find events with filter: {}",filter);
+        return repository.findAll(EventMemberSpecification.withFilter(filter),
+                        filter.getPagination().pageRequest())
+                .stream()
+                .map(eventMemberMapper::eventMemberToResponse)
+                .toList();
+    }
 
     @Override
     public List<EventMemberResponse> findAll(Pageable pageable) {
