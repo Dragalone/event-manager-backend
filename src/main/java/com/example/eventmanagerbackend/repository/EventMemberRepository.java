@@ -19,4 +19,6 @@ public interface EventMemberRepository extends JpaRepository<EventMember, UUID>,
 
     Page<EventMember> findByEventIdAndApprovement(UUID eventId, Approvement approvement, Pageable pageable);
 
+    Page<EventMember> findAllByEventId(UUID eventId);
+
 }

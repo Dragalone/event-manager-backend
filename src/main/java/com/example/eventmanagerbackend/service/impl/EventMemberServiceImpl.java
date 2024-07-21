@@ -109,6 +109,15 @@ public class EventMemberServiceImpl implements EventMemberService {
     }
 
     @Override
+    public List<EventMemberResponse> findAllMembersByIventId(UUID eventId) {
+        log.info("Find all members in event: {}", eventId);
+        List<EventMemberResponse> eventMemberResponses = new ArrayList<>();
+        return repository.findAllByEventId(eventId)
+                .stream().map(eventMemberMapper::eventMemberToResponse)
+                .toList();
+    }
+
+    @Override
     public EventMemberResponse update(UUID id, UpsertEventMemberRequest entityRequest) {
         log.info("Update event member with ID: {}", id);
 
