@@ -4,8 +4,11 @@ package com.example.eventmanagerbackend.service.document;
 import com.deepoove.poi.XWPFTemplate;
 import com.example.eventmanagerbackend.entity.Event;
 import com.example.eventmanagerbackend.entity.EventMember;
+import com.example.eventmanagerbackend.service.EventMemberService;
 import com.example.eventmanagerbackend.service.EventService;
 import com.example.eventmanagerbackend.service.qr_generator.QrCodeGenerator;
+import com.example.eventmanagerbackend.web.dto.response.EventMemberResponse;
+import com.example.eventmanagerbackend.web.dto.response.EventResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.BaseFont;
@@ -19,6 +22,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
@@ -39,6 +43,7 @@ import java.util.List;
 public class DocumentService {
 
     private final EventService eventService;
+    private final EventMemberService eventMemberService;
 
 
 
@@ -166,11 +171,11 @@ public class DocumentService {
             InvalidFormatException {
         ByteArrayOutputStream bis = new ByteArrayOutputStream();
 
-        EventMember eventMember = eventService.findEventMemberById(eventMemberId);
+        EventMemberResponse eventMember = eventMemberService.findById(eventMemberId);
         if (eventMember == null){
             return null;
         }
-        Event event = eventService.findById(eventMember.getId())//(
+        EventResponse event = eventService.findById(eventMember.getId());//(//!!!!!!!!!!!!!!!!!!!!!!!!!
              //   (()-> new RuntimeException(MessageFormat.format("Event with id {0} not found!",eventMember.getId())))
        // );
 
@@ -190,9 +195,9 @@ public class DocumentService {
             InvalidFormatException {
         ByteArrayOutputStream bis = new ByteArrayOutputStream();
 
-        List<EventMember> members = new ArrayList<>();
+        List<EventMemberResponse> members = new ArrayList<>();
 
-        members = eventService.findMembersByEventId(eventId);
+        members = eventMemberService.findAllMembersByIventId(eventId);
 
         if (members == null){
             return null;

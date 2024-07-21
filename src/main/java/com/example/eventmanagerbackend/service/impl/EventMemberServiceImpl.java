@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -95,6 +96,16 @@ public class EventMemberServiceImpl implements EventMemberService {
         return eventMemberMapper.eventMemberToResponse(
                 repository.save(eventMember)
         );
+    }
+
+    @Override
+    public List<EventMemberResponse> findMembersByEventId(UUID event, Pageable pageable) {
+        log.info("Find all members in event: {}", event);
+        List<EventMemberResponse> eventMemberResponses = new ArrayList<>();
+        return repository.findAllByEventId(event, pageable)
+                .stream().map(eventMemberMapper::eventMemberToResponse)
+                .toList();
+
     }
 
     @Override
