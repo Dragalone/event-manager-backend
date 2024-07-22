@@ -26,7 +26,6 @@ import java.util.UUID;
 @RequestMapping(path="api/v1/events",produces = "application/json")
 @CrossOrigin()
 public class EventController {
-
     private final EventService eventService;
 
     @GetMapping

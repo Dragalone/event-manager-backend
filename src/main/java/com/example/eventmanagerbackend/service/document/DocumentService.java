@@ -21,6 +21,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
@@ -197,7 +198,7 @@ public class DocumentService {
 
         List<EventMemberResponse> members = new ArrayList<>();
 
-        members = eventMemberService.findAllMembersByIventId(eventId);
+        members = eventMemberService.findMembersByEventId(eventId, Pageable.unpaged());
 
         if (members == null){
             return null;

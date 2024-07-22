@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.UUID;
 
 public interface EventMemberService extends EntityService<EventMemberResponse, UpsertEventMemberRequest, UUID> {
+
     void setApprovment(UUID id, Approvement approvement);
     public List<EventMemberResponse> filterBy(EventMemberFilterRequest filter);
     EventMemberResponse createMemberOnConsideration(UpsertOnConsiderationEventMemberRequest entityRequest);
 
     List<EventMemberResponse> findMembersByEventId(UUID eventId, Pageable pageable);
 
-    List<EventMemberResponse> findAllMembersByIventId(UUID eventId);
 }

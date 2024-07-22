@@ -20,6 +20,7 @@ import com.example.eventmanagerbackend.web.dto.response.EventMemberResponse;
 import com.example.eventmanagerbackend.web.dto.response.EventResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,7 +53,6 @@ public class EventMemberServiceImpl implements EventMemberService {
                 .map(eventMemberMapper::eventMemberToResponse)
                 .toList();
     }
-
     @Override
     public List<EventMemberResponse> findAll(Pageable pageable) {
         log.info("Find all event members");
@@ -108,14 +108,6 @@ public class EventMemberServiceImpl implements EventMemberService {
 
     }
 
-    @Override
-    public List<EventMemberResponse> findAllMembersByIventId(UUID eventId) {
-        log.info("Find all members in event: {}", eventId);
-        List<EventMemberResponse> eventMemberResponses = new ArrayList<>();
-        return repository.findAllByEventId(eventId)
-                .stream().map(eventMemberMapper::eventMemberToResponse)
-                .toList();
-    }
 
     @Override
     public EventMemberResponse update(UUID id, UpsertEventMemberRequest entityRequest) {
