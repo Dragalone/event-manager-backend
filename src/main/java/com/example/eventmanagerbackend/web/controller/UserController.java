@@ -1,14 +1,18 @@
 package com.example.eventmanagerbackend.web.controller;
 
+import com.example.eventmanagerbackend.entity.RoleType;
+import com.example.eventmanagerbackend.repository.RoleTypeRepository;
 import com.example.eventmanagerbackend.service.UserService;
 import com.example.eventmanagerbackend.web.dto.request.UpsertDefaultUserRequest;
 import com.example.eventmanagerbackend.web.dto.request.UpsertUserRequest;
 import com.example.eventmanagerbackend.web.dto.response.UserResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -18,6 +22,7 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+    private final RoleTypeRepository roleTypeRepository;
 
     @PostMapping
     public ResponseEntity<UserResponse> createDefaultUser(@RequestBody UpsertDefaultUserRequest request){
@@ -42,6 +47,21 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@RequestParam UUID id){
         userService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    //TODO
+    // Переписать под фильтры
+    @GetMapping
+    public ResponseEntity<List<UserResponse>> getAllUsers(){
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(userService.findAll(Pageable.unpaged()));
+    }
+    //TODO
+    // Переписать
+    @GetMapping("/getRoles")
+    public ResponseEntity<List<RoleType>> getAllRoles(){
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(roleTypeRepository.findAll());
     }
 
 
