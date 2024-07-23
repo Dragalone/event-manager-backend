@@ -77,4 +77,6 @@ public class EventMemberController {
         eventMemberService.setApprovment(id, Approvement.valueOf(approvement));
         return ResponseEntity.noContent().build();
     }
+
+
 }

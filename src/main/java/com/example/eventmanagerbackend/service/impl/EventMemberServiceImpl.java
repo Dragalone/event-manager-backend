@@ -46,7 +46,7 @@ public class EventMemberServiceImpl implements EventMemberService {
 
     @Override
     public List<EventMemberResponse> filterBy(EventMemberFilterRequest filter) {
-        log.info("Find events with filter: {}",filter);
+        log.info("Find events members with filter: {}",filter);
         return repository.findAll(EventMemberSpecification.withFilter(filter),
                         filter.getPagination().pageRequest())
                 .stream()

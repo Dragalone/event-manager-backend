@@ -18,12 +18,12 @@ import java.util.UUID;
 public class UpsertEventRequest {
 
     @NotNull
-    private String eventName;
+    private String name;
 
-    private String eventSummary;
+    private String summary;
 
     @NotNull
-    private Instant eventDate;
+    private Instant date;
 
     @NotNull
     private Boolean regOpen;

@@ -60,6 +60,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventResponse update(UUID id, UpsertEventRequest entityRequest) {
         log.info("Update event with ID: {}", id);
+        log.info("Update event: {}", entityRequest);
 
         var updatedEvent = updateFields(repository.findById(id).orElseThrow(() ->
                         new EntityNotFoundException(MessageFormat.format("Event with ID {0} not found!", id)
