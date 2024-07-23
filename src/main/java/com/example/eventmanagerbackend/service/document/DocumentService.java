@@ -64,7 +64,7 @@ public class DocumentService {
 
             if (templateOpt.isEmpty()) {
                 try {
-                    Resource resource = new ClassPathResource("templates/qr_pdf.html");
+                    Resource resource = new ClassPathResource("templates/qr_pdf2.html");
                     templateContent = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
                 } catch (IOException e) {
                     throw new RuntimeException("Failed to load default template", e);
@@ -135,7 +135,7 @@ public class DocumentService {
         renderer.getFontResolver().addFont(path1, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         renderer.getFontResolver().addFont(path2, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 
-        String htmlContent = generateHtml("badge.html", context);
+        String htmlContent = generateHtml("badge2.html", context);
         System.out.println(htmlContent);
         renderer.setDocumentFromString(htmlContent);
         renderer.layout();

@@ -91,7 +91,7 @@ public class EmailService {
         Optional<TemplateEntity> templateOpt = templateService.getTemplateByEventIdAndType(eventMember.getEvent().getId(), Type.APPROVED);
         if (templateOpt.isEmpty()) {
             try {
-                Resource resource = new ClassPathResource("templates/email_message.html");
+                Resource resource = new ClassPathResource("templates/email_message2.html");
                 templateContent = Files.readString(resource.getFile().toPath());
             } catch (IOException e) {
                 new ResponseEntity<>("Unable to load default template", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -160,7 +160,7 @@ public class EmailService {
         Optional<TemplateEntity> templateOpt = templateService.getTemplateByEventIdAndType(eventMember.getEvent().getId(), Type.GREETINGS);
         if (templateOpt.isEmpty()) {
             try {
-                Resource resource = new ClassPathResource("templates/greetings.html");
+                Resource resource = new ClassPathResource("templates/greetings2.html");
                 templateContent = Files.readString(resource.getFile().toPath());
             } catch (IOException e) {
                  new ResponseEntity<>("Unable to load default template", HttpStatus.INTERNAL_SERVER_ERROR);
