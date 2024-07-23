@@ -46,4 +46,8 @@ public class EventMember {
     @JoinColumn(name = "event_id")
     @ToString.Exclude
     private Event event;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "status_id")
+    private MemberStatus status;
 }
