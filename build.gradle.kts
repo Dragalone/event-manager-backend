@@ -57,6 +57,9 @@ dependencies {
 
     implementation("org.thymeleaf:thymeleaf:3.1.2.RELEASE")
     implementation("org.thymeleaf:thymeleaf-spring5:3.1.2.RELEASE")
+
+    implementation("org.jsoup:jsoup:1.17.2")
+    implementation("com.github.spullara.mustache.java:compiler:0.9.5")
 }
 
 tasks.withType<Test> {

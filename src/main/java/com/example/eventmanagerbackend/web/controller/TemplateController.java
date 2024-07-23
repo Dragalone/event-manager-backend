@@ -1,5 +1,7 @@
-package com.example.eventmanagerbackend.service.template;
+package com.example.eventmanagerbackend.web.controller;
 
+import com.example.eventmanagerbackend.entity.Type;
+import com.example.eventmanagerbackend.service.template.TemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,5 +1,11 @@
 package com.example.eventmanagerbackend.service.template;
 
+import com.example.eventmanagerbackend.entity.TemplateEntity;
+import com.example.eventmanagerbackend.entity.Type;
+import com.example.eventmanagerbackend.repository.EventRepository;
+import com.example.eventmanagerbackend.repository.TemplateRepository;
+import com.example.eventmanagerbackend.service.EventService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -8,18 +14,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-
+@RequiredArgsConstructor
 @Service
 public class TemplateService {
     private final String templatesPath = "templates/";
-    @Autowired
-    private TemplateRepository templateRepository;
+
+    private final TemplateRepository templateRepository;
+
+    private final EventService eventService;
+    private final EventRepository eventRepository;
 
     public ResponseEntity<String> getAllTemplates(String templateName,UUID eventId) {
 
@@ -30,7 +40,7 @@ public class TemplateService {
             return ResponseEntity.ok(htmlContent);
         } catch (IOException e) {
             Optional<TemplateEntity> templateEntity = templateRepository.findAll().stream()
-                    .filter(template -> template.getTemplateName().equals(templateName) && template.getEventid().equals(eventId))
+                    .filter(template -> template.getTemplateName().equals(templateName) && template.getEvent().getId().equals(eventId))
                     .findFirst();
             if (templateEntity.isPresent()) {
                 return ResponseEntity.ok(templateEntity.get().getTemptext());
@@ -59,7 +69,7 @@ public class TemplateService {
             TemplateEntity newTemplate = new TemplateEntity();
             newTemplate.setTemplateName(templateName);
             newTemplate.setTemptext(htmlContent);
-            newTemplate.setEventid(eventId);
+            newTemplate.setEvent(eventRepository.findById(eventId).get());
             newTemplate.setTemptype(type);
             templateRepository.save(newTemplate);
 
@@ -70,7 +80,7 @@ public class TemplateService {
     }
 
     public Optional<TemplateEntity> getTemplateByEventIdAndType(UUID eventId, Type type) {
-        return templateRepository.findByEventidAndTemptype(eventId, type);
+        return templateRepository.findByEventIdAndTemptype(eventId, type);
     }
 
     public ResponseEntity<List<String>> getAllTemplatesByEventId(UUID eventId) {
@@ -82,7 +92,7 @@ public class TemplateService {
             Files.list(path).filter(Files::isRegularFile).forEach(file -> {
                 templateNames.add(file.getFileName().toString());
             });
-            Iterable<TemplateEntity> templates = templateRepository.findAllByEventid(eventId);
+            Iterable<TemplateEntity> templates = templateRepository.findAllByEventId(eventId);
             templates.forEach(template -> templateNames.add(template.getTemplateName()));
 
             return ResponseEntity.ok(templateNames);
@@ -95,7 +105,7 @@ public class TemplateService {
 
     private Optional<TemplateEntity> findExistingTemplate(UUID eventId, Type type) {
         return templateRepository.findAll().stream()
-                .filter(template -> template.getEventid().equals(eventId) && template.getTemptype().equals(type))
+                .filter(template -> template.getEvent().getId().equals(eventId) && template.getTemptype().equals(type))
                 .findFirst();
     }
 
@@ -120,7 +130,7 @@ public class TemplateService {
         } catch (IOException e) {
             // Если шаблон не найден в classpath, ищем в базе данных
             Optional<TemplateEntity> templateEntity = templateRepository.findAll().stream()
-                    .filter(template -> template.getTemplateName().equals(templateName) && template.getEventid().equals(eventId))
+                    .filter(template -> template.getTemplateName().equals(templateName) && template.getEvent().getId().equals(eventId))
                     .findFirst();
             if (templateEntity.isPresent()) {
                 byte[] data = templateEntity.get().getTemptext().getBytes();

@@ -1,8 +1,9 @@
-package com.example.eventmanagerbackend.service.template;
+package com.example.eventmanagerbackend.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.UUID;
 
@@ -18,9 +19,6 @@ public class TemplateEntity {
     @Column (columnDefinition="TEXT", name = "temptext")
     private String temptext;
 
-    @Column(name = "eventid")
-    private UUID eventid;
-
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "temptype")
     private Type temptype;
@@ -28,5 +26,10 @@ public class TemplateEntity {
     @Getter
     @Column (name = "templatename")
     private String templateName;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id")
+    @ToString.Exclude
+    private Event event;
 
 }

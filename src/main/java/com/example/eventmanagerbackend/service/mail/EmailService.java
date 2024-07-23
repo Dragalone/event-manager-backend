@@ -1,27 +1,51 @@
 package com.example.eventmanagerbackend.service.mail;
 
+
+
+import com.example.eventmanagerbackend.entity.Event;
+import com.example.eventmanagerbackend.entity.EventMember;
+import com.example.eventmanagerbackend.entity.TemplateEntity;
+import com.example.eventmanagerbackend.entity.Type;
+import com.example.eventmanagerbackend.exception.EntityNotFoundException;
+import com.example.eventmanagerbackend.repository.EventMemberRepository;
+import com.example.eventmanagerbackend.repository.EventRepository;
+import com.example.eventmanagerbackend.service.EventService;
 import com.example.eventmanagerbackend.service.document.DocumentService;
+import com.example.eventmanagerbackend.service.template.TemplateService;
 import com.example.eventmanagerbackend.utils.mail.AbstractEmailContext;
+import com.example.eventmanagerbackend.utils.mail.EmailContext;
+import com.github.mustachejava.DefaultMustacheFactory;
+import com.github.mustachejava.Mustache;
+import com.github.mustachejava.MustacheFactory;
 import com.lowagie.text.DocumentException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamSource;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Service
 @RequiredArgsConstructor
@@ -30,40 +54,89 @@ public class EmailService {
     private final JavaMailSender emailSender;
 
     private final SpringTemplateEngine templateEngine;
-
+    private final EventMemberRepository eventMemberRepository;
+    private final EventRepository eventRepository;
+    private final TemplateService templateService;
     private final DocumentService documentService;
 
-    public void sendSimpleEmail(String toAddress, String subject, String message) {
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+    public void sendMailWithPdf(UUID memberId) throws MessagingException, IOException, DocumentException {
 
-        simpleMailMessage.setTo(toAddress);
-        simpleMailMessage.setSubject(subject);
-        simpleMailMessage.setText(message);
+        EventMember eventMember = eventMemberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                                MessageFormat.format("Event member with ID {0} not found!", memberId)
+                        ));
+        Event event = eventRepository.findById(eventMember.getEvent().getId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        MessageFormat.format("Event with ID {0} not found!", eventMember.getEvent().getId())
+                ));
+        Map<String, Object> pdfContext = new HashMap<>();
+        pdfContext.put("event_name", event.getName());
+        pdfContext.put("event_id", event.getId());
+        pdfContext.put("имя", eventMember.getFirstname());
+        pdfContext.put("отчество", eventMember.getMiddlename());
+        pdfContext.put("фамилия", eventMember.getLastname());
+        pdfContext.put("email", eventMember.getEmail());
+        pdfContext.put("phone", eventMember.getPhone());
+        pdfContext.put("position",eventMember.getPosition());
+        pdfContext.put("company", eventMember.getCompany());
+        pdfContext.put("event_date",event.getDate());
+//        pdfContext.put("status", eventService.getRoleNameById(eventMember.getEventMembersRoleId()));
+        pdfContext.put("memberId",memberId);
 
-        emailSender.send(simpleMailMessage);
-    }
+        //ByteArrayInputStream bis = documentService.generatePdf("qr.png", eventMember, eventService.findById(eventMember.getEventId()));
+
+        Map<String, Object> templateContext = new HashMap<>();
+        String templateContent;
+
+        Optional<TemplateEntity> templateOpt = templateService.getTemplateByEventIdAndType(eventMember.getEvent().getId(), Type.APPROVED);
+        if (templateOpt.isEmpty()) {
+            try {
+                Resource resource = new ClassPathResource("templates/email_message.html");
+                templateContent = Files.readString(resource.getFile().toPath());
+            } catch (IOException e) {
+                new ResponseEntity<>("Unable to load default template", HttpStatus.INTERNAL_SERVER_ERROR);
+                return;
+            }
+        } else {
+            templateContent = templateOpt.get().getTemptext(); // Получаем содержимое шаблона из базы данных
+        }
+        // Вся инфа об участнике поступает в template
+        templateContext.put("имя", eventMember.getFirstname());
+        templateContext.put("отчество", eventMember.getMiddlename());
+        templateContext.put("фамилия", eventMember.getLastname());
+        templateContext.put("email", eventMember.getEmail());
+        templateContext.put("phone", eventMember.getPhone());
+        templateContext.put("position",eventMember.getPosition());
+        templateContext.put("company", eventMember.getCompany());
+//        templateContext.put("member_role", eventService.getRoleNameById(eventMember.getEventMembersRoleId()));
+        // Вся инфа о мероприятии, которая поступает в template
+
+        //templateContext.put("event_date",event.getEvent_date());
+
+        templateContext.put("event_name", event.getName());
+        templateContext.put("event_summary", event.getSummary());
+        templateContext.put("event_adress", event.getAddress());
+        AbstractEmailContext emailContext = new EmailContext();
+        emailContext.setContext(templateContext);
+        emailContext.setTo(eventMember.getEmail());
+        emailContext.setSubject("Приглашение на меропритие: "+ event.getName());
+        emailContext.setTemplateLocation(templateContent);
 
 
-//    public void sendEmailWithAttachment(String toAddress, String subject, String message, String attachment) throws MessagingException, FileNotFoundException {
-//
-//        MimeMessage mimeMessage = emailSender.createMimeMessage();
-//        MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true);
-//        messageHelper.setTo(toAddress);
-//        messageHelper.setSubject(subject);
-//        messageHelper.setText(message);
-//        //FileSystemResource file = new FileSystemResource(ResourceUtils.getFile(attachment));
-//        //messageHelper.addAttachment("Purchase Order", file);
-//        emailSender.send(mimeMessage);
-//    }
-
-    public void sendMailWithPdf(AbstractEmailContext emailContext, Map<String, Object> pdfContext) throws MessagingException, IOException, DocumentException {
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message,
                 MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());
-        Context context = new Context();
-        context.setVariables(emailContext.getContext());
-        String emailContent = templateEngine.process(emailContext.getTemplateLocation(), context);
+
+        // Create Mustache context
+        Map<String, Object> context = new HashMap<>(emailContext.getContext());
+        // Compile Mustache template
+        MustacheFactory mf = new DefaultMustacheFactory();
+        Mustache mustache = mf.compile(new StringReader(emailContext.getTemplateLocation()), "template");
+        // Execute template rendering
+        StringWriter writer = new StringWriter();
+        mustache.execute(writer, context);
+        String emailContent = writer.toString();
 
         mimeMessageHelper.setTo(emailContext.getTo());
         mimeMessageHelper.setSubject(emailContext.getSubject());
@@ -76,21 +149,84 @@ public class EmailService {
         emailSender.send(message);
     }
 
-    public void sendMail(AbstractEmailContext emailContext) throws MessagingException {
+    public void sendMail(UUID memberId) throws MessagingException {
+
+        EventMember eventMember = eventMemberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("Event member not found"));
+        Event event = eventRepository.findById(eventMember.getEvent().getId())
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+        String templateContent = "";
+
+        Optional<TemplateEntity> templateOpt = templateService.getTemplateByEventIdAndType(eventMember.getEvent().getId(), Type.GREETINGS);
+        if (templateOpt.isEmpty()) {
+            try {
+                Resource resource = new ClassPathResource("templates/greetings.html");
+                templateContent = Files.readString(resource.getFile().toPath());
+            } catch (IOException e) {
+                 new ResponseEntity<>("Unable to load default template", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            templateContent = templateOpt.get().getTemptext(); // Получаем содержимое шаблона из базы данных
+        }
+
+        // Подготовка контекста для шаблона
+        Map<String, Object> templateContext = new HashMap<>();
+        templateContext.put("имя", eventMember.getFirstname());
+        templateContext.put("отчество", eventMember.getMiddlename());
+        templateContext.put("фамилия", eventMember.getLastname());
+        templateContext.put("email", eventMember.getEmail());
+        templateContext.put("phone", eventMember.getPhone());
+        templateContext.put("position", eventMember.getPosition());
+        templateContext.put("company", eventMember.getCompany());
+//        templateContext.put("member_role", eventService.getRoleNameById(eventMember.getEventMembersRoleId()));
+
+        templateContext.put("event_date", event.getDate());
+        templateContext.put("event_name", event.getName());
+        templateContext.put("event_summary", event.getSummary());
+        templateContext.put("event_address", event.getAddress());
+
+        // Настройка контекста email
+        AbstractEmailContext emailContext = new EmailContext();
+        emailContext.setContext(templateContext);
+        emailContext.setTo(eventMember.getEmail());
+        emailContext.setSubject("Регистрация на мероприятие: " + event.getName());
+        emailContext.setTemplateLocation(templateContent); // Используем содержимое шаблона напрямую
+
+
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message,
                 MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());
-        Context context = new Context();
-        context.setVariables(emailContext.getContext());
-        String emailContent = templateEngine.process(emailContext.getTemplateLocation(), context);
+
+        // Create Mustache context
+        Map<String, Object> context = new HashMap<>(emailContext.getContext());
+
+        // Compile Mustache template from HTML content
+        MustacheFactory mf = new DefaultMustacheFactory();
+        Mustache mustache = mf.compile(new StringReader(emailContext.getTemplateLocation()), "template");
+
+        // Execute template rendering
+        StringWriter writer = new StringWriter();
+        mustache.execute(writer, context);
+        String emailContent = writer.toString();
 
         mimeMessageHelper.setTo(emailContext.getTo());
         mimeMessageHelper.setSubject(emailContext.getSubject());
-        //mimeMessageHelper.setFrom(email.getFrom());
         mimeMessageHelper.setText(emailContent, true);
 
         emailSender.send(message);
     }
+
+// UNUSED FUNCTIONS
+//    public void sendSimpleEmail(String toAddress, String subject, String message) {
+//        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+//
+//        simpleMailMessage.setTo(toAddress);
+//        simpleMailMessage.setSubject(subject);
+//        simpleMailMessage.setText(message);
+//
+//        emailSender.send(simpleMailMessage);
+//    }
+
 }
 

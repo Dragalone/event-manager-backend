@@ -50,5 +50,10 @@ public class Event {
     @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<EventMember> eventMembers = new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private List<TemplateEntity> templateEntities = new ArrayList<>();
 }
 
