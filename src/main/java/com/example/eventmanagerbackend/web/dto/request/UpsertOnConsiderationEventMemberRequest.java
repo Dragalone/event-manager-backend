@@ -36,4 +36,7 @@ public class UpsertOnConsiderationEventMemberRequest {
     @NotNull
     private UUID eventId;
 
+    @NotNull
+    private UUID statusId;
+
 }

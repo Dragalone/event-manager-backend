@@ -32,6 +32,7 @@ public class EventMemberController {
                                                                      @Nullable @RequestParam UUID eventId) {
         EventMemberFilterRequest filter = new EventMemberFilterRequest(paginationRequest,searchQuery,approvement,eventId);
         List<EventMemberResponse> eventMembers = eventMemberService.filterBy(filter);
+        System.out.println(eventMembers);
         return ResponseEntity.ok(
                 ModelListResponse.<EventMemberResponse>builder()
                         .totalCount((long) eventMembers.size())
@@ -55,6 +56,8 @@ public class EventMemberController {
 
     @PostMapping
     public ResponseEntity<EventMemberResponse> createEventMemberOnConsideration(@RequestBody UpsertOnConsiderationEventMemberRequest request){
+       //TODO ПЕРЕПИСАТЬ ЛОГИКУ ДЕФОЛТНОГО ЗНАЧЕНИЯ ДЛЯ СТАТУСА
+        request.setStatusId(UUID.fromString("4a6f3ec3-d453-433a-a335-e9976d3eb3f2"));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(eventMemberService.createMemberOnConsideration(request));
     }

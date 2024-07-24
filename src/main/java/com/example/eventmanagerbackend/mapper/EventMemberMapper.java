@@ -18,6 +18,7 @@ public interface EventMemberMapper {
     EventMember upsertRequestToEventMember(UpsertEventMemberRequest request);
     EventMember notApprovedUpsertRequestToEventMember(UpsertOnConsiderationEventMemberRequest request);
     @Mapping(source = "event.id", target = "eventId")
+    @Mapping(source = "status.status", target = "statusName")
     EventMemberResponse eventMemberToResponse(EventMember eventMember);
 
 }

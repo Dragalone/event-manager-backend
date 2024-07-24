@@ -37,6 +37,8 @@ public class EventMemberResponse {
 
     private UUID eventId;
 
+    private String statusName;
+
 }
 
 

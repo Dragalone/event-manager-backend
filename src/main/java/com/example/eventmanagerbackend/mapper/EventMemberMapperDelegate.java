@@ -4,6 +4,7 @@ import com.example.eventmanagerbackend.entity.EventMember;
 import com.example.eventmanagerbackend.exception.EntityNotFoundException;
 import com.example.eventmanagerbackend.repository.EventMemberRepository;
 import com.example.eventmanagerbackend.repository.EventRepository;
+import com.example.eventmanagerbackend.repository.MemberStatusRepository;
 import com.example.eventmanagerbackend.web.dto.request.UpsertEventMemberRequest;
 import com.example.eventmanagerbackend.web.dto.request.UpsertOnConsiderationEventMemberRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ public abstract class EventMemberMapperDelegate implements EventMemberMapper{
     @Autowired
     private EventRepository eventRepository;
 
+    @Autowired
+    private MemberStatusRepository memberStatusRepository;
+
     @Override
     public EventMember upsertRequestToEventMember(UpsertEventMemberRequest request){
         EventMember eventMember = delegate.upsertRequestToEventMember(request);
@@ -25,14 +29,24 @@ public abstract class EventMemberMapperDelegate implements EventMemberMapper{
                 MessageFormat.format("Event with ID {0} not found!", request.getEventId())
         )));
 
+        eventMember.setStatus(memberStatusRepository.findById(request.getStatusId()).orElseThrow(() -> new EntityNotFoundException(
+                MessageFormat.format("Status with ID {0} not found!", request.getEventId())
+        )));
+
+
         return eventMember;
     }
+
+
 
     @Override
     public EventMember notApprovedUpsertRequestToEventMember(UpsertOnConsiderationEventMemberRequest request){
         EventMember eventMember = delegate.notApprovedUpsertRequestToEventMember(request);
         eventMember.setEvent(eventRepository.findById(request.getEventId()).orElseThrow(() -> new EntityNotFoundException(
                 MessageFormat.format("Event with ID {0} not found!", request.getEventId())
+        )));
+        eventMember.setStatus(memberStatusRepository.findById(request.getStatusId()).orElseThrow(() -> new EntityNotFoundException(
+                MessageFormat.format("Status with ID {0} not found!", request.getEventId())
         )));
         return eventMember;
     }

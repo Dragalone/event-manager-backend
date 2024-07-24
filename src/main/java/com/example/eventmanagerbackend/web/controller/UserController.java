@@ -56,6 +56,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.findAll(Pageable.unpaged()));
     }
+
     //TODO
     // Переписать
     @GetMapping("/getRoles")

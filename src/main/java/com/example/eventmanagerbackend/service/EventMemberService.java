@@ -17,6 +17,7 @@ public interface EventMemberService extends EntityService<EventMemberResponse, U
 
     void setApprovment(UUID id, Approvement approvement);
     public List<EventMemberResponse> filterBy(EventMemberFilterRequest filter);
+
     EventMemberResponse createMemberOnConsideration(UpsertOnConsiderationEventMemberRequest entityRequest);
 
     List<EventMemberResponse> findMembersByEventId(UUID eventId, Pageable pageable);
