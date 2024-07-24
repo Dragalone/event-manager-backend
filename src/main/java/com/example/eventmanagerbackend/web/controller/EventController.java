@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.Console;
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
@@ -56,6 +57,7 @@ public class EventController {
 
     @PutMapping("/{id}")
     public ResponseEntity<EventResponse> updateEvent(@PathVariable UUID id, @RequestBody UpsertEventRequest request){
+        System.out.println(request);
         return ResponseEntity.ok(
                 eventService.update(id,request)
         );

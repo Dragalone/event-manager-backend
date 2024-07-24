@@ -59,6 +59,7 @@ public class EventMemberController {
 
     @PutMapping("/{id}")
     public ResponseEntity<EventMemberResponse> updateEventMember(@PathVariable UUID id, @RequestBody UpsertEventMemberRequest request){
+        System.out.println(request.getStatusId());
         return ResponseEntity.ok(
                 eventMemberService.update(id,request)
         );

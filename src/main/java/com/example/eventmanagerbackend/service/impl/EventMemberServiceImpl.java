@@ -164,6 +164,9 @@ public class EventMemberServiceImpl implements EventMemberService {
         if (newEntity.getApprovement()!=null){
             oldEntity.setApprovement(newEntity.getApprovement());
         }
+        if (newEntity.getStatus()!=null){
+            oldEntity.setStatus(newEntity.getStatus());
+        }
         return oldEntity;
     }
 
