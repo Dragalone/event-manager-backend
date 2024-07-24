@@ -3,9 +3,12 @@ package com.example.eventmanagerbackend.web.controller;
 import com.example.eventmanagerbackend.entity.RoleType;
 import com.example.eventmanagerbackend.repository.RoleTypeRepository;
 import com.example.eventmanagerbackend.service.UserService;
+import com.example.eventmanagerbackend.web.dto.request.PaginationRequest;
 import com.example.eventmanagerbackend.web.dto.request.UpsertDefaultUserRequest;
 import com.example.eventmanagerbackend.web.dto.request.UpsertUserRequest;
+import com.example.eventmanagerbackend.web.dto.response.ModelListResponse;
 import com.example.eventmanagerbackend.web.dto.response.UserResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -52,9 +55,9 @@ public class UserController {
     //TODO
     // Переписать под фильтры
     @GetMapping
-    public ResponseEntity<List<UserResponse>> getAllUsers(){
+    public ResponseEntity<ModelListResponse<UserResponse>> getAllUsers(@Valid PaginationRequest paginationRequest){
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(userService.findAll(Pageable.unpaged()));
+                .body(userService.findAll(paginationRequest.pageRequest()));
     }
 
     //TODO
