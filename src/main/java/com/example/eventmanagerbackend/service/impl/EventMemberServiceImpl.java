@@ -18,9 +18,11 @@ import com.example.eventmanagerbackend.web.dto.request.UpsertEventMemberRequest;
 import com.example.eventmanagerbackend.web.dto.request.UpsertOnConsiderationEventMemberRequest;
 import com.example.eventmanagerbackend.web.dto.response.EventMemberResponse;
 import com.example.eventmanagerbackend.web.dto.response.EventResponse;
+import com.example.eventmanagerbackend.web.dto.response.ModelListResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,20 +47,23 @@ public class EventMemberServiceImpl implements EventMemberService {
 
 
     @Override
-    public List<EventMemberResponse> filterBy(EventMemberFilterRequest filter) {
+    public ModelListResponse<EventMemberResponse>filterBy(EventMemberFilterRequest filter) {
         log.info("Find events members with filter: {}",filter);
-        return repository.findAll(EventMemberSpecification.withFilter(filter),
-                        filter.getPagination().pageRequest())
-                .stream()
-                .map(eventMemberMapper::eventMemberToResponse)
-                .toList();
+        Page<EventMember> eventMembers = repository.findAll(EventMemberSpecification.withFilter(filter), filter.getPagination().pageRequest());
+        return ModelListResponse.<EventMemberResponse>builder()
+                .totalCount(eventMembers.getTotalElements())
+                .data(eventMembers.stream().map(eventMemberMapper::eventMemberToResponse).toList())
+                .build();
     }
+
     @Override
-    public List<EventMemberResponse> findAll(Pageable pageable) {
+    public ModelListResponse<EventMemberResponse> findAll(Pageable pageable) {
         log.info("Find all event members");
-        return repository.findAll(pageable)
-                .stream().map(eventMemberMapper::eventMemberToResponse)
-                .toList();
+        Page<EventMember> eventMembers = repository.findAll(pageable);
+        return ModelListResponse.<EventMemberResponse>builder()
+                .totalCount(eventMembers.getTotalElements())
+                .data(eventMembers.stream().map(eventMemberMapper::eventMemberToResponse).toList())
+                .build();
     }
 
     @Override
@@ -83,6 +88,7 @@ public class EventMemberServiceImpl implements EventMemberService {
                 repository.save(eventMemberMapper.upsertRequestToEventMember(entityRequest))
         );
     }
+
     @Override
     public EventMemberResponse createMemberOnConsideration(UpsertOnConsiderationEventMemberRequest entityRequest) {
         log.info("Create event member on consideration {}",entityRequest);
@@ -99,15 +105,14 @@ public class EventMemberServiceImpl implements EventMemberService {
     }
 
     @Override
-    public List<EventMemberResponse> findMembersByEventId(UUID event, Pageable pageable) {
+    public ModelListResponse<EventMemberResponse> findMembersByEventId(UUID event, Pageable pageable) {
         log.info("Find all members in event: {}", event);
-        List<EventMemberResponse> eventMemberResponses = new ArrayList<>();
-        return repository.findAllByEventId(event, pageable)
-                .stream().map(eventMemberMapper::eventMemberToResponse)
-                .toList();
-
+        Page<EventMember> eventMembers = repository.findAllByEventId(event, pageable);
+        return  ModelListResponse.<EventMemberResponse>builder()
+                .totalCount(eventMembers.getTotalElements())
+                .data(eventMembers.stream().map(eventMemberMapper::eventMemberToResponse).toList())
+                .build();
     }
-
 
     @Override
     public EventMemberResponse update(UUID id, UpsertEventMemberRequest entityRequest) {
@@ -161,7 +166,6 @@ public class EventMemberServiceImpl implements EventMemberService {
         }
         return oldEntity;
     }
-
 
     @Override
     public void setApprovment(UUID id, Approvement approvement) {

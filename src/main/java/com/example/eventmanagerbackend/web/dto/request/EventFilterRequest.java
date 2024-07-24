@@ -26,4 +26,5 @@ public class EventFilterRequest {
     private Boolean regOpen;
 
     private UUID orgId;
+
 }

@@ -2,6 +2,7 @@ package com.example.eventmanagerbackend.web.controller;
 
 import com.example.eventmanagerbackend.entity.Type;
 import com.example.eventmanagerbackend.service.template.TemplateService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,11 +12,11 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/templates")
 public class TemplateController {
 
-    @Autowired
-    private TemplateService templateService;
+    private final TemplateService templateService;
 
     private final String templatesPath = "templates/";
 

@@ -10,8 +10,9 @@ import com.example.eventmanagerbackend.exception.EntityNotFoundException;
 import com.example.eventmanagerbackend.repository.EventMemberRepository;
 import com.example.eventmanagerbackend.repository.EventRepository;
 import com.example.eventmanagerbackend.service.EventService;
-import com.example.eventmanagerbackend.service.qr_generator.QrCodeGenerator;
+
 import com.example.eventmanagerbackend.service.template.TemplateService;
+import com.example.eventmanagerbackend.utils.qr_generator.QrCodeGenerator;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;

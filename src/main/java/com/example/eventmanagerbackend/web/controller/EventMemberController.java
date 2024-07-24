@@ -31,13 +31,8 @@ public class EventMemberController {
                                                                      @Nullable @RequestParam Approvement approvement,
                                                                      @Nullable @RequestParam UUID eventId) {
         EventMemberFilterRequest filter = new EventMemberFilterRequest(paginationRequest,searchQuery,approvement,eventId);
-        List<EventMemberResponse> eventMembers = eventMemberService.filterBy(filter);
-        System.out.println(eventMembers);
         return ResponseEntity.ok(
-                ModelListResponse.<EventMemberResponse>builder()
-                        .totalCount((long) eventMembers.size())
-                        .data(eventMembers)
-                        .build()
+                eventMemberService.filterBy(filter)
         );
     }
 

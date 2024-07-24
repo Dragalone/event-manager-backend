@@ -11,6 +11,7 @@ import com.example.eventmanagerbackend.repository.UserRepository;
 import com.example.eventmanagerbackend.service.UserService;
 import com.example.eventmanagerbackend.web.dto.request.UpsertDefaultUserRequest;
 import com.example.eventmanagerbackend.web.dto.request.UpsertUserRequest;
+import com.example.eventmanagerbackend.web.dto.response.ModelListResponse;
 import com.example.eventmanagerbackend.web.dto.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -71,11 +72,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public List<UserResponse> findAll(Pageable pageable) {
+    public ModelListResponse<UserResponse> findAll(Pageable pageable) {
         log.info("Find all users");
-        return repository.findAll(pageable)
-                .stream().map(userMapper::userToResponse)
-                .toList();
+        Page<User> users = repository.findAll(pageable);
+        return ModelListResponse.<UserResponse>builder()
+                .totalCount(users.getTotalElements())
+                .data(users.stream().map(userMapper::userToResponse).collect(Collectors.toList()))
+                .build();
     }
 
     @Override

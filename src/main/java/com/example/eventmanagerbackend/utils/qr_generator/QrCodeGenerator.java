@@ -1,4 +1,4 @@
-package com.example.eventmanagerbackend.service.qr_generator;
+package com.example.eventmanagerbackend.utils.qr_generator;
 
 import com.google.zxing.*;
 import com.google.zxing.common.*;

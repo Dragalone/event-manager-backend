@@ -1,5 +1,6 @@
 package com.example.eventmanagerbackend.service;
 
+import com.example.eventmanagerbackend.web.dto.response.ModelListResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -7,7 +8,7 @@ import java.util.List;
 
 public interface EntityService<E, R, ID> {
 
-    List<E> findAll(Pageable pageable);
+    ModelListResponse<E> findAll(Pageable pageable);
 
     E findById(ID id);
 

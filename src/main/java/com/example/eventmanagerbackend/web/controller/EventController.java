@@ -37,12 +37,8 @@ public class EventController {
                                                                      @Nullable @RequestParam Boolean regOpen,
                                                                      @Nullable @RequestParam UUID orgId) {
         EventFilterRequest filter = new EventFilterRequest(paginationRequest, name, lowerDateLimit, higherDateLimit,regOpen, orgId);
-        List<EventResponse> events = eventService.filterBy(filter);
         return ResponseEntity.ok(
-                ModelListResponse.<EventResponse>builder()
-                        .totalCount((long) events.size())
-                        .data(events)
-                        .build()
+                eventService.filterBy(filter)
         );
     }
     @GetMapping("/{id}")
@@ -70,8 +66,4 @@ public class EventController {
         eventService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
-
-
-
-
 }

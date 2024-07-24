@@ -12,9 +12,12 @@ import com.example.eventmanagerbackend.repository.EventSpecification;
 import com.example.eventmanagerbackend.service.EventService;
 import com.example.eventmanagerbackend.web.dto.request.EventFilterRequest;
 import com.example.eventmanagerbackend.web.dto.request.UpsertEventRequest;
+import com.example.eventmanagerbackend.web.dto.response.EventMemberResponse;
 import com.example.eventmanagerbackend.web.dto.response.EventResponse;
+import com.example.eventmanagerbackend.web.dto.response.ModelListResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -33,11 +36,14 @@ public class EventServiceImpl implements EventService {
     private final EventRepository repository;
 
     @Override
-    public List<EventResponse> findAll(Pageable pageable) {
+    public ModelListResponse<EventResponse>findAll(Pageable pageable) {
         log.info("Find all events");
-        return repository.findAll(pageable)
-                .stream().map(eventMapper::eventToResponse)
-                .toList();
+        Page<Event> events = repository.findAll(pageable);
+        return ModelListResponse.<EventResponse>builder()
+                .totalCount(events.getTotalElements())
+                .data(events.stream().map(eventMapper::eventToResponse).toList())
+                .build();
+
     }
 
     @Override
@@ -110,21 +116,24 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventResponse> findAllByOrganizerId(UUID orgId, Pageable pageable) {
+    public ModelListResponse<EventResponse> findAllByOrganizerId(UUID orgId, Pageable pageable) {
         log.info("Find all events by organizer id: {}",orgId);
-        return repository.findAllByOrganizerId(orgId, pageable)
-                .stream().map(eventMapper::eventToResponse)
-                .toList();
+        Page<Event> events = repository.findAllByOrganizerId(orgId, pageable);
+        return ModelListResponse.<EventResponse>builder()
+                .totalCount(events.getTotalElements())
+                .data(events.stream().map(eventMapper::eventToResponse).toList())
+                .build();
     }
 
     @Override
-    public List<EventResponse> filterBy(EventFilterRequest filter) {
+    public ModelListResponse<EventResponse> filterBy(EventFilterRequest filter) {
         log.info("Find events with filter: {}",filter);
-        return repository.findAll(EventSpecification.withFilter(filter),
-                        filter.getPagination().pageRequest())
-                .stream()
-                .map(eventMapper::eventToResponse)
-                .toList();
+        Page<Event> events = repository.findAll(EventSpecification.withFilter(filter),
+                filter.getPagination().pageRequest());
+        return ModelListResponse.<EventResponse>builder()
+                .totalCount(events.getTotalElements())
+                .data(events.stream().map(eventMapper::eventToResponse).toList())
+                .build();
     }
 
 
