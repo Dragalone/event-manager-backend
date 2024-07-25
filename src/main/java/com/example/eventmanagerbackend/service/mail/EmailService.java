@@ -70,18 +70,17 @@ public class EmailService {
                         MessageFormat.format("Event with ID {0} not found!", eventMember.getEvent().getId())
                 ));
         Map<String, Object> pdfContext = new HashMap<>();
-        pdfContext.put("event_name", event.getName());
-        pdfContext.put("event_id", event.getId());
+        pdfContext.put("ивент_имя", event.getName());
+        pdfContext.put("ивент_id", event.getId());
         pdfContext.put("имя", eventMember.getFirstname());
         pdfContext.put("отчество", eventMember.getMiddlename());
         pdfContext.put("фамилия", eventMember.getLastname());
         pdfContext.put("email", eventMember.getEmail());
-        pdfContext.put("phone", eventMember.getPhone());
-        pdfContext.put("position",eventMember.getPosition());
-        pdfContext.put("company", eventMember.getCompany());
-        pdfContext.put("event_date",event.getDate());
-//        pdfContext.put("status", eventService.getRoleNameById(eventMember.getEventMembersRoleId()));
-        pdfContext.put("memberId",memberId);
+        pdfContext.put("телефон", eventMember.getPhone());
+        pdfContext.put("должность",eventMember.getPosition());
+        pdfContext.put("организация", eventMember.getCompany());
+        pdfContext.put("ивент_дата",event.getDate());
+        pdfContext.put("участник_id",memberId);
 
         //ByteArrayInputStream bis = documentService.generatePdf("qr.png", eventMember, eventService.findById(eventMember.getEventId()));
 
@@ -105,17 +104,15 @@ public class EmailService {
         templateContext.put("отчество", eventMember.getMiddlename());
         templateContext.put("фамилия", eventMember.getLastname());
         templateContext.put("email", eventMember.getEmail());
-        templateContext.put("phone", eventMember.getPhone());
-        templateContext.put("position",eventMember.getPosition());
-        templateContext.put("company", eventMember.getCompany());
-//        templateContext.put("member_role", eventService.getRoleNameById(eventMember.getEventMembersRoleId()));
-        // Вся инфа о мероприятии, которая поступает в template
+        templateContext.put("телефон", eventMember.getPhone());
+        templateContext.put("должность", eventMember.getPosition());
+        templateContext.put("организация", eventMember.getCompany());
+        templateContext.put("статус", eventMember.getStatus().getStatus());
 
-        //templateContext.put("event_date",event.getEvent_date());
-
-        templateContext.put("event_name", event.getName());
-        templateContext.put("event_summary", event.getSummary());
-        templateContext.put("event_adress", event.getAddress());
+        templateContext.put("ивент_дата", event.getDate());
+        templateContext.put("ивент_имя", event.getName());
+        templateContext.put("ивент_описание", event.getSummary());
+        templateContext.put("ивент_адрес", event.getAddress());
         AbstractEmailContext emailContext = new EmailContext();
         emailContext.setContext(templateContext);
         emailContext.setTo(eventMember.getEmail());
@@ -175,15 +172,15 @@ public class EmailService {
         templateContext.put("отчество", eventMember.getMiddlename());
         templateContext.put("фамилия", eventMember.getLastname());
         templateContext.put("email", eventMember.getEmail());
-        templateContext.put("phone", eventMember.getPhone());
-        templateContext.put("position", eventMember.getPosition());
-        templateContext.put("company", eventMember.getCompany());
-//        templateContext.put("member_role", eventService.getRoleNameById(eventMember.getEventMembersRoleId()));
+        templateContext.put("телефон", eventMember.getPhone());
+        templateContext.put("должность", eventMember.getPosition());
+        templateContext.put("организация", eventMember.getCompany());
+        templateContext.put("статус", eventMember.getStatus().getStatus());
 
-        templateContext.put("event_date", event.getDate());
-        templateContext.put("event_name", event.getName());
-        templateContext.put("event_summary", event.getSummary());
-        templateContext.put("event_address", event.getAddress());
+        templateContext.put("ивент_дата", event.getDate());
+        templateContext.put("ивент_имя", event.getName());
+        templateContext.put("ивент_описание", event.getSummary());
+        templateContext.put("ивент_адрес", event.getAddress());
 
         // Настройка контекста email
         AbstractEmailContext emailContext = new EmailContext();

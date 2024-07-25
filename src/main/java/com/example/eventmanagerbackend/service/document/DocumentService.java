@@ -165,10 +165,20 @@ public class DocumentService {
             );
 
             XWPFTemplate.compile(BADGE_TEMPLATE_PATH).render(new HashMap<String, Object>(){{
-                put("first_name", eventMember.getFirstname());
-                put("last_name", eventMember.getLastname());
+                put("имя", eventMember.getFirstname());
+                put("отчество", eventMember.getMiddlename());
+                put("фамилия", eventMember.getLastname());
+                put("email", eventMember.getEmail());
+                put("телефон", eventMember.getPhone());
+                put("должность", eventMember.getPosition());
+                put("организация", eventMember.getCompany());
+                put("статус", eventMember.getStatus().getStatus());
+
+                put("ивент_дата", event.getDate());
+                put("ивент_имя", event.getName());
+                put("ивент_описание", event.getSummary());
+                put("ивент_адрес", event.getAddress());
                 put("role", "Участник");
-                put("event", event.getName());
             }}).writeAndClose(bis);
 
             return new ByteArrayInputStream(bis.toByteArray());
