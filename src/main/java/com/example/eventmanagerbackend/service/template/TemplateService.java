@@ -6,6 +6,7 @@ import com.example.eventmanagerbackend.repository.EventRepository;
 import com.example.eventmanagerbackend.repository.TemplateRepository;
 import com.example.eventmanagerbackend.service.EventService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -16,13 +17,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class TemplateService {
     private final String templatesPath = "templates/";
 
@@ -31,21 +35,39 @@ public class TemplateService {
     private final EventService eventService;
     private final EventRepository eventRepository;
 
-    public ResponseEntity<String> getAllTemplates(String templateName,UUID eventId) {
+    public ResponseEntity<String> getAllTemplates(String templateName, UUID eventId) {
+        log.info("Request received for template: {} and eventId: {}", templateName, eventId);
 
         try {
-            Resource resource = new ClassPathResource(templatesPath + templateName);
-            byte[] data = Files.readAllBytes(resource.getFile().toPath());
-            String htmlContent = new String(data);
-            return ResponseEntity.ok(htmlContent);
-        } catch (IOException e) {
-            Optional<TemplateEntity> templateEntity = templateRepository.findAll().stream()
-                    .filter(template -> template.getTemplateName().equals(templateName) && template.getEvent().getId().equals(eventId))
-                    .findFirst();
-            if (templateEntity.isPresent()) {
-                return ResponseEntity.ok(templateEntity.get().getTemptext());
+            String filePath = templatesPath + templateName;
+            log.info("Attempting to read template from path: {}", filePath);
+            Resource resource = new ClassPathResource(filePath);
+            Path path = Paths.get(resource.getURI());
+            log.info("Resource exists: {}", resource.exists());
+            if (resource.exists()) {
+
+                byte[] data = Files.readAllBytes(path);
+                String htmlContent = new String(data);
+                log.info("Successfully read template content");
+                return ResponseEntity.ok(htmlContent);
+            } else {
+                log.warn("Resource not found: {}", filePath);
             }
+        } catch (IOException e) {
+            log.error("Error reading template file: {}", templatesPath + templateName, e);
         }
+
+        Optional<TemplateEntity> templateEntity = templateRepository.findAll().stream()
+                .filter(template -> template.getTemplateName().equals(templateName) && template.getEvent().getId().equals(eventId))
+                .findFirst();
+        if (templateEntity.isPresent()) {
+            log.info("Template found in database");
+            return ResponseEntity.ok(templateEntity.get().getTemptext());
+        } else {
+            log.warn("Template not found in database for templateName: {} and eventId: {}", templateName, eventId);
+        }
+
+        log.warn("Returning 404 Not Found for templateName: {} and eventId: {}", templateName, eventId);
         return ResponseEntity.notFound().build();
     }
 

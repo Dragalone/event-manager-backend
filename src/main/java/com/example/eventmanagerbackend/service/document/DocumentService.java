@@ -77,7 +77,7 @@ public class DocumentService {
             }
         }
 
-        String url = "http://localhost:5173/event-member-info/" + context.get("memberId");
+        String url = "http://77.222.38.40:5173/event-member-info/" + context.get("memberId");
         BufferedImage qrCodeImage = qrCodeGenerator.generateQrCode(url);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

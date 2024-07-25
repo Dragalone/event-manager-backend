@@ -7,6 +7,8 @@ plugins {
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
 
+
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
@@ -60,8 +62,12 @@ dependencies {
 
     implementation("org.jsoup:jsoup:1.17.2")
     implementation("com.github.spullara.mustache.java:compiler:0.9.5")
+
+
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
+
 }
+
