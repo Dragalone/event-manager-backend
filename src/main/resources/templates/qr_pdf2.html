@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -85,13 +86,13 @@
 </head>
 <body>
 <div class="container">
-  <h1>{{event_name}}</h1>
+  <h1>{{ивент_имя}}</h1>
   <p>Не нужно печатать этот бланк! Просто покажите QR-code администратору на стойке регистрации</p>
   <table class="info-table">
     <tr>
       <th>ФИО:</th>
       <td>Full name:</td>
-      <td class="right-column">{{first_name}} {{middlename}} {{last_name}}</td>
+      <td class="right-column">{{фамилия}} {{имя}} {{отчество}}</td>
     </tr>
     <tr>
       <th>E-mail:</th>
@@ -101,27 +102,27 @@
     <tr>
       <th>Телефон:</th>
       <td>Phone:</td>
-      <td class="right-column">{{phone}}</td>
+      <td class="right-column">{{телефон}}</td>
     </tr>
     <tr>
       <th>Компания:</th>
       <td>Company:</td>
-      <td class="right-column">{{company}}</td>
+      <td class="right-column">{{организация}}</td>
     </tr>
     <tr>
       <th>Должность:</th>
       <td>Position:</td>
-      <td class="right-column">{{position}}</td>
+      <td class="right-column">{{должность}}</td>
     </tr>
     <tr>
       <th>Дата мероприятия:</th>
       <td>Event date:</td>
-      <td class="right-column">{{event_date}}</td>
+      <td class="right-column">{{ивент_дата}}</td>
     </tr>
     <tr>
       <th>Статус:</th>
       <td>Status:</td>
-      <td class="right-column">{{status}}</td>
+      <td class="right-column">{{статус}}</td>
     </tr>
   </table>
   <div class="notice">

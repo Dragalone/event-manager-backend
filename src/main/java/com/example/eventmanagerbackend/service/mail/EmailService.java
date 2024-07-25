@@ -21,6 +21,7 @@ import com.lowagie.text.DocumentException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
@@ -39,6 +40,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +51,7 @@ import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EmailService {
 
     private final JavaMailSender emailSender;
@@ -60,27 +63,27 @@ public class EmailService {
     private final DocumentService documentService;
 
     public void sendMailWithPdf(UUID memberId) throws MessagingException, IOException, DocumentException {
-
         EventMember eventMember = eventMemberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException(
-                                MessageFormat.format("Event member with ID {0} not found!", memberId)
-                        ));
+                        MessageFormat.format("Event member with ID {0} not found!", memberId)
+                ));
         Event event = eventRepository.findById(eventMember.getEvent().getId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         MessageFormat.format("Event with ID {0} not found!", eventMember.getEvent().getId())
                 ));
         Map<String, Object> pdfContext = new HashMap<>();
-        pdfContext.put("ивент_имя", event.getName());
-        pdfContext.put("ивент_id", event.getId());
         pdfContext.put("имя", eventMember.getFirstname());
         pdfContext.put("отчество", eventMember.getMiddlename());
         pdfContext.put("фамилия", eventMember.getLastname());
         pdfContext.put("email", eventMember.getEmail());
         pdfContext.put("телефон", eventMember.getPhone());
-        pdfContext.put("должность",eventMember.getPosition());
+        pdfContext.put("должность", eventMember.getPosition());
         pdfContext.put("организация", eventMember.getCompany());
-        pdfContext.put("ивент_дата",event.getDate());
-        pdfContext.put("участник_id",memberId);
+        pdfContext.put("статус", eventMember.getStatus().getStatus());
+        pdfContext.put("ивент_дата", event.getDate());
+        pdfContext.put("ивент_имя", event.getName());
+        pdfContext.put("ивент_описание", event.getSummary());
+        pdfContext.put("ивент_адрес", event.getAddress());
 
         //ByteArrayInputStream bis = documentService.generatePdf("qr.png", eventMember, eventService.findById(eventMember.getEventId()));
 
@@ -88,12 +91,14 @@ public class EmailService {
         String templateContent;
 
         Optional<TemplateEntity> templateOpt = templateService.getTemplateByEventIdAndType(eventMember.getEvent().getId(), Type.APPROVED);
+
         if (templateOpt.isEmpty()) {
             try {
                 Resource resource = new ClassPathResource("templates/email_message2.html");
-                templateContent = Files.readString(resource.getFile().toPath());
+                templateContent = Files.readString(Paths.get(resource.getURI()));
             } catch (IOException e) {
-                new ResponseEntity<>("Unable to load default template", HttpStatus.INTERNAL_SERVER_ERROR);
+
+                e.printStackTrace();
                 return;
             }
         } else {
@@ -119,7 +124,6 @@ public class EmailService {
         emailContext.setSubject("Приглашение на меропритие: "+ event.getName());
         emailContext.setTemplateLocation(templateContent);
 
-
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message,
                 MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
@@ -139,7 +143,6 @@ public class EmailService {
         mimeMessageHelper.setSubject(emailContext.getSubject());
         //mimeMessageHelper.setFrom(email.getFrom());
         mimeMessageHelper.setText(emailContent, true);
-
         ByteArrayInputStream bis = documentService.generatePdfQrReport(pdfContext);
         InputStreamSource inputStreamSource = new ByteArrayResource(bis.readAllBytes());
         mimeMessageHelper.addAttachment("Invitation.pdf",inputStreamSource);
@@ -158,7 +161,7 @@ public class EmailService {
         if (templateOpt.isEmpty()) {
             try {
                 Resource resource = new ClassPathResource("templates/greetings2.html");
-                templateContent = Files.readString(resource.getFile().toPath());
+                templateContent = Files.readString(Paths.get(resource.getURI()));
             } catch (IOException e) {
                  new ResponseEntity<>("Unable to load default template", HttpStatus.INTERNAL_SERVER_ERROR);
             }

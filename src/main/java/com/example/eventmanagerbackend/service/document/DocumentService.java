@@ -36,6 +36,8 @@ import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.*;
@@ -53,6 +55,7 @@ public class DocumentService {
     private final EventMemberRepository eventMemberRepository;
     private final SpringTemplateEngine templateEngine;
 
+    private final String templatesPath = "templates/";
     public ByteArrayInputStream generatePdfQrReport(Map<String, Object> context)
             throws DocumentException, IOException {
 
@@ -76,7 +79,6 @@ public class DocumentService {
                 templateContent = templateOpt.get().getTemptext();
             }
         }
-
         String url = "http://77.222.38.40:5173/event-member-info/" + context.get("memberId");
         BufferedImage qrCodeImage = qrCodeGenerator.generateQrCode(url);
 
@@ -100,9 +102,10 @@ public class DocumentService {
         renderer.getFontResolver().addFont(path3, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         renderer.getFontResolver().addFont(path4, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 
-        String baseUrl = FileSystems.getDefault()
-                .getPath("src/main/resources/templates")
-                .toUri().toURL().toString();
+        Resource resource = new ClassPathResource(templatesPath);
+        //Path path = Paths.get(resource.getURI());
+
+        String baseUrl = resource.getURL().toString();
         String htmlContent = generateHtml(templateContent, context);
         Document document = Jsoup.parse(htmlContent, "UTF-8");
         document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
