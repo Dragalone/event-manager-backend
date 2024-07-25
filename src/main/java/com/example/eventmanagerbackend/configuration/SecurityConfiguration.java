@@ -44,8 +44,14 @@ public class SecurityConfiguration {
 //                    request.requestMatchers("/info").authenticated();
 //                    request.requestMatchers("/login").permitAll();
                     request.requestMatchers("/api/email/**").permitAll();
-                    request.requestMatchers("api/auth/**").permitAll();
-                    request.requestMatchers("/api/auth/token").permitAll();
+                    request.requestMatchers("/api/auth/**").permitAll();
+                    request.requestMatchers("/api/document/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_ORGANIZATOR");
+                    request.requestMatchers("/api/v1/events/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_ORGANIZATOR");
+                    request.requestMatchers("/api/v1/event-members/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_ORGANIZATOR");
+                    request.requestMatchers("/api/v1/status/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_ORGANIZATOR");
+                    request.requestMatchers("/api/templates/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_ORGANIZATOR");
+                    request.requestMatchers("/api/v1/users/**").hasAuthority("ROLE_ADMIN");
+
                     request.requestMatchers("api/v1/users/admin").hasAnyAuthority("ROLE_ADMIN");
                     request.requestMatchers("api/v1/event-members/admin").hasAnyAuthority("ROLE_ADMIN");
                     request.anyRequest().permitAll();
