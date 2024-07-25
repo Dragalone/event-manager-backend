@@ -84,13 +84,15 @@ public class TemplateService {
     }
 
     public ResponseEntity<List<String>> getAllTemplatesByEventId(UUID eventId) {
-
         List<String> templateNames = new ArrayList<>();
         try {
             Resource resource = new ClassPathResource(templatesPath);
             Path path = Paths.get(resource.getURI());
             Files.list(path).filter(Files::isRegularFile).forEach(file -> {
-                templateNames.add(file.getFileName().toString());
+                String fileName = file.getFileName().toString();
+                if (!fileName.equals("badge2.html")) {
+                    templateNames.add(fileName);
+                }
             });
             Iterable<TemplateEntity> templates = templateRepository.findAllByEventId(eventId);
             templates.forEach(template -> templateNames.add(template.getTemplateName()));

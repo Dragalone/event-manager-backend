@@ -25,6 +25,8 @@ import org.jsoup.nodes.Document;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import javax.imageio.ImageIO;
@@ -49,7 +51,7 @@ public class DocumentService {
     private final String BADGE_TEMPLATE_PATH = "src/main/resources/static/badge_template.docx";
     private final EventRepository eventRepository;
     private final EventMemberRepository eventMemberRepository;
-
+    private final SpringTemplateEngine templateEngine;
 
     public ByteArrayInputStream generatePdfQrReport(Map<String, Object> context)
             throws DocumentException, IOException {
@@ -123,20 +125,24 @@ public class DocumentService {
             }
             members_pairs.add(pair);
         }
+
+
+
         Map<String, Object> context = new HashMap<>();
         context.put("members_pairs",members_pairs);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         context.put("event_name", eventName);
 
         ITextRenderer renderer = new ITextRenderer();
-            URL url1 = new URL("classpath:/static/Manrope.ttf");
-            URL url2 = new URL("classpath:/static/Unbounded.ttf");
+
+        URL url1 = new URL("classpath:/static/Manrope.ttf");
+        URL url2 = new URL("classpath:/static/Unbounded.ttf");
         String path1 = url1.getPath();
         String path2 = url2.getPath();
         renderer.getFontResolver().addFont(path1, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         renderer.getFontResolver().addFont(path2, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 
-        String htmlContent = generateHtml("badge2.html", context);
+        String htmlContent = generateHtmlOld("badge2.html", context);
         System.out.println(htmlContent);
         renderer.setDocumentFromString(htmlContent);
         renderer.layout();
@@ -171,12 +177,29 @@ public class DocumentService {
     }
 
     private String generateHtml(String templateContent, Map<String, Object> data) {
+        // Убедитесь, что templateContent содержит правильный HTML
+        System.out.println("Template Content:");
+        System.out.println(templateContent);
+
         MustacheFactory mf = new DefaultMustacheFactory();
         Mustache mustache = mf.compile(new StringReader(templateContent), "template");
-        // Execute template rendering
+
+        // Выполняем рендеринг шаблона
         StringWriter writer = new StringWriter();
         mustache.execute(writer, data);
-        return writer.toString();
+
+        // Логируем результат рендеринга для проверки
+        String htmlContent = writer.toString();
+        System.out.println("Generated HTML Content:");
+        System.out.println(htmlContent);
+
+        return htmlContent;
+    }
+
+    private String generateHtmlOld(String templateFileName, Map<String, Object> data) {
+        Context context = new Context();
+        context.setVariables(data);
+        return templateEngine.process(templateFileName, context);
     }
 
 

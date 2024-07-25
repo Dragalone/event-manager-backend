@@ -4,11 +4,11 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Event Badges</title>
-    <style>
+    <style th:inline="text">
 
         @font-face {
-            src: url('static/Unbounded.ttf');
-            src: url('static/Manrope.ttf');
+            src: url([[@{classpath:/static/Manrope.ttf}]]);
+            src: url([[@{classpath:/static/Unbounded.ttf}]]);
             -fs-pdf-font-embed: embed;
             -fs-pdf-font-encoding: Identity-H;
         }
@@ -26,7 +26,7 @@
         }
 
         .badge {
-            background-image: url('static/images/pattern.jpg');
+            background-image: url([[@{classpath:/static/images/pattern.jpg}]]);
             background-size: cover;
             background-repeat: no-repeat;
             padding: 20px;
@@ -69,23 +69,19 @@
 <body>
 <div class="container">
     <table>
-        {{#members_pairs}}
-        <tr>
-            {{#this}}
-            <td>
-                <div class="badge">
-                    <div class="event-name" id="event{{index}}">{{event_name}}</div>
-                    <div class="surname" id="surname{{index}}">{{lastname}}</div>
-                    <div class="name" id="name{{index}}">{{firstname}}</div>
-                    <div class="participant" id="participant{{index}}">УЧАСТНИК</div>
-                </div>
-            </td>
-            {{/this}}
-        </tr>
-        {{#isPageBreak}}
-        <tr style="page-break-after:always;"></tr>
-        {{/isPageBreak}}
-        {{/members_pairs}}
+        <th:block th:each="member_pair, pairStats : ${members_pairs}">
+            <tr>
+                <td th:each="member, stats : ${member_pair}">
+                    <div class="badge">
+                        <div th:text="${event_name}" class="event-name" th:id="'event' + ${pairStats.index + stats.index}">Мероприятие</div>
+                        <div th:text="${member.lastname}" class="surname" th:id="'surname' + ${pairStats.index + stats.index}">ФАМИЛИЯ</div>
+                        <div th:text="${member.firstname}" class="name" th:id="'name' + ${pairStats.index + stats.index}">ИМЯ</div>
+                        <div class="participant" th:id="'participant' + ${pairStats.index + stats.index}">УЧАСТНИК</div>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="(((${pairStats.index} + 1)%2  == 0) and !(${pairStats.last}))" style="page-break-after:always;"></tr>
+        </th:block>
     </table>
 </div>
 </body>
