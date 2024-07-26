@@ -72,6 +72,7 @@ public class EmailService {
                         MessageFormat.format("Event with ID {0} not found!", eventMember.getEvent().getId())
                 ));
         Map<String, Object> pdfContext = new HashMap<>();
+        pdfContext.put("memberId", eventMember.getId());
         pdfContext.put("имя", eventMember.getFirstname());
         pdfContext.put("отчество", eventMember.getMiddlename());
         pdfContext.put("фамилия", eventMember.getLastname());
@@ -113,7 +114,7 @@ public class EmailService {
         templateContext.put("должность", eventMember.getPosition());
         templateContext.put("организация", eventMember.getCompany());
         templateContext.put("статус", eventMember.getStatus().getStatus());
-
+        templateContext.put("memberId", eventMember.getId());
         templateContext.put("ивент_дата", event.getDate());
         templateContext.put("ивент_имя", event.getName());
         templateContext.put("ивент_описание", event.getSummary());
@@ -179,7 +180,7 @@ public class EmailService {
         templateContext.put("должность", eventMember.getPosition());
         templateContext.put("организация", eventMember.getCompany());
         templateContext.put("статус", eventMember.getStatus().getStatus());
-
+        templateContext.put("memberId", eventMember.getId());
         templateContext.put("ивент_дата", event.getDate());
         templateContext.put("ивент_имя", event.getName());
         templateContext.put("ивент_описание", event.getSummary());

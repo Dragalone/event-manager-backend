@@ -4,6 +4,7 @@ import com.example.eventmanagerbackend.security.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -50,9 +51,10 @@ public class SecurityConfiguration {
                     request.requestMatchers("/api/v1/event-members/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_ORGANIZATOR");
                     request.requestMatchers("/api/v1/status/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_ORGANIZATOR");
                     request.requestMatchers("/api/templates/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_ORGANIZATOR");
-                    request.requestMatchers("/api/v1/users/**").hasAuthority("ROLE_ADMIN");
 
-                    request.requestMatchers("api/v1/users/admin").hasAnyAuthority("ROLE_ADMIN");
+                    //TODO ИСПРАВИТЬ ЭТУ ДИЧЬ ->
+                    request.requestMatchers("/api/v1/users/**").permitAll();
+                    //request.requestMatchers(HttpMethod.POST,"api/v1/users/admin").permitAll();
                     request.requestMatchers("api/v1/event-members/admin").hasAnyAuthority("ROLE_ADMIN");
                     request.anyRequest().permitAll();
                 })

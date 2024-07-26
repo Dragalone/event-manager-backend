@@ -79,7 +79,7 @@ public class DocumentService {
                 templateContent = templateOpt.get().getTemptext();
             }
         }
-        String url = "http://77.222.38.40:5173/event-member-info/" + context.get("memberId");
+        String url = "http://77.222.38.40/event-member-info/" + context.get("memberId");
         BufferedImage qrCodeImage = qrCodeGenerator.generateQrCode(url);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -146,7 +146,6 @@ public class DocumentService {
         renderer.getFontResolver().addFont(path2, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 
         String htmlContent = generateHtmlOld("badge2.html", context);
-        System.out.println(htmlContent);
         renderer.setDocumentFromString(htmlContent);
         renderer.layout();
         renderer.createPDF(outputStream, false);

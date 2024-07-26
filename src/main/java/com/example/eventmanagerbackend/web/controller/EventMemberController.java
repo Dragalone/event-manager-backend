@@ -52,7 +52,7 @@ public class EventMemberController {
     @PostMapping
     public ResponseEntity<EventMemberResponse> createEventMemberOnConsideration(@RequestBody UpsertOnConsiderationEventMemberRequest request){
        //TODO ПЕРЕПИСАТЬ ЛОГИКУ ДЕФОЛТНОГО ЗНАЧЕНИЯ ДЛЯ СТАТУСА
-        request.setStatusId(UUID.fromString("4a6f3ec3-d453-433a-a335-e9976d3eb3f2"));
+        request.setStatusId(UUID.fromString("2e0b5137-ec98-4632-bbe6-2b867ded745d"));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(eventMemberService.createMemberOnConsideration(request));
     }

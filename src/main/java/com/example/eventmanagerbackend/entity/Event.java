@@ -24,7 +24,8 @@ public class Event {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "summary")
+
+    @Column(name = "summary", length = 1000)
     private String summary;
 
     @Column(name = "date")
