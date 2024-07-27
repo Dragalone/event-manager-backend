@@ -7,7 +7,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
@@ -21,33 +23,32 @@ public class EventScheduleService {
     }
 
     @Scheduled(cron = "${interval-delete-event-cron}")
-    public void changeRegistrationStatus(){
-        LocalDate currentDate = LocalDate.now();
-        List<Event> events = StreamSupport
-                .stream(eventRepository.findAll().spliterator(), false)
-                .filter(event -> {
-                    LocalDate eventEnd = event.getCloseRegistrationDate().atZone(ZoneId.systemDefault()).toLocalDate();
-                    LocalDate eventStart = event.getStartRegistrationDate().atZone(ZoneId.systemDefault()).toLocalDate();
-                    return (event.getRegOpen() && currentDate.isAfter(eventEnd)) ||
-                            (!event.getRegOpen() && currentDate.isAfter(eventStart) && currentDate.isBefore(eventEnd));
-                })
-                .toList();
+    public void changeRegistrationStatus() {
+        LocalDateTime currentDate = LocalDateTime.now(); // текущая дата и время
+        List<Event> events = eventRepository.findAll();
 
         events.forEach(event -> {
-            LocalDate eventEnd = event.getCloseRegistrationDate().atZone(ZoneId.systemDefault()).toLocalDate();
-            LocalDate eventStart = event.getStartRegistrationDate().atZone(ZoneId.systemDefault()).toLocalDate();
+            ZonedDateTime eventEndZoned = event.getCloseRegistrationDate().atZone(ZoneId.systemDefault());
+            LocalDateTime eventEnd = eventEndZoned.toLocalDateTime();
+            ZonedDateTime eventStartZoned = event.getStartRegistrationDate().atZone(ZoneId.systemDefault());
+            LocalDateTime eventStart = eventStartZoned.toLocalDateTime();
+
+            System.out.println("eventEnd" + eventEnd + '\n');
+            System.out.println("eventStart" + eventStart + '\n');
+            System.out.println("event" + event.getCloseRegistrationDate() + '\n');
+
 
             if (event.getRegOpen() && currentDate.isAfter(eventEnd)) {
-                event.setRegOpen(false);
+                event.setRegOpen(Boolean.FALSE);
             } else if (!event.getRegOpen() && currentDate.isAfter(eventStart) && currentDate.isBefore(eventEnd)) {
-                event.setRegOpen(true);
+                event.setRegOpen(Boolean.TRUE);
             }
         });
 
         if (!events.isEmpty()) {
             eventRepository.saveAll(events);
         }
-
+        System.out.println(events);
     }
 
 }
