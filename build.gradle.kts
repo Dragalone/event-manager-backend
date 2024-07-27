@@ -63,6 +63,7 @@ dependencies {
     implementation("org.jsoup:jsoup:1.17.2")
     implementation("com.github.spullara.mustache.java:compiler:0.9.5")
 
+    implementation("org.apache.commons:commons-csv:1.10.0")
 
 }
 
