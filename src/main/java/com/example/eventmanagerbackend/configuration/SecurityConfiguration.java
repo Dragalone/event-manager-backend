@@ -53,8 +53,9 @@ public class SecurityConfiguration {
                     request.requestMatchers("/api/templates/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_ORGANIZATOR");
 
                     //TODO ИСПРАВИТЬ ЭТУ ДИЧЬ ->
-                    request.requestMatchers("/api/v1/users/**").permitAll();
-                    //request.requestMatchers(HttpMethod.POST,"api/v1/users/admin").permitAll();
+                    request.requestMatchers(HttpMethod.POST, "/api/v1/users/admin").permitAll();
+                    request.requestMatchers("api/v1/users/**").hasAnyAuthority("ROLE_ADMIN");
+
                     request.requestMatchers("api/v1/event-members/admin").hasAnyAuthority("ROLE_ADMIN");
                     request.anyRequest().permitAll();
                 })

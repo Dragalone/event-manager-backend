@@ -1,6 +1,9 @@
 package com.example.eventmanagerbackend.web.controller;
 
 import com.example.eventmanagerbackend.entity.Event;
+import com.example.eventmanagerbackend.entity.EventMember;
+import com.example.eventmanagerbackend.exception.EntityNotFoundException;
+import com.example.eventmanagerbackend.repository.EventRepository;
 import com.example.eventmanagerbackend.service.EventService;
 import com.example.eventmanagerbackend.web.dto.request.EventFilterRequest;
 import com.example.eventmanagerbackend.web.dto.request.PaginationRequest;
@@ -29,6 +32,7 @@ import java.util.UUID;
 @CrossOrigin()
 public class EventController {
     private final EventService eventService;
+    private final EventRepository eventRepository;
 
     @GetMapping
     public ResponseEntity<ModelListResponse<EventResponse>> filterBy(@Valid PaginationRequest paginationRequest,
@@ -68,4 +72,12 @@ public class EventController {
         eventService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{id}/check")
+    public ResponseEntity<String> checkEvent(@PathVariable UUID id) {
+        return eventService.check(id);
+    }
+
+
+
 }

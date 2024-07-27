@@ -122,7 +122,7 @@ public class EmailService {
         AbstractEmailContext emailContext = new EmailContext();
         emailContext.setContext(templateContext);
         emailContext.setTo(eventMember.getEmail());
-        emailContext.setSubject("Приглашение на меропритие: "+ event.getName());
+        emailContext.setSubject("Приглашение на мероприятие: "+ event.getName());
         emailContext.setTemplateLocation(templateContent);
 
         MimeMessage message = emailSender.createMimeMessage();

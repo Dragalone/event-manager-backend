@@ -142,7 +142,8 @@ public class TemplateService {
         try {
             // Попытка загрузки шаблона из classpath
             Resource resource = new ClassPathResource(templatesPath + templateName);
-            byte[] data = Files.readAllBytes(resource.getFile().toPath());
+            Path path = Paths.get(resource.getURI());
+            byte[] data = Files.readAllBytes(path);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.TEXT_HTML);

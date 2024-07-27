@@ -9,6 +9,7 @@ import com.example.eventmanagerbackend.web.dto.response.EventResponse;
 import com.example.eventmanagerbackend.web.dto.response.ModelListResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,4 +18,6 @@ public interface EventService extends EntityService<EventResponse,UpsertEventReq
     ModelListResponse<EventResponse> findAllByOrganizerId(UUID orgId, Pageable pageable);
 
     ModelListResponse<EventResponse> filterBy(EventFilterRequest filter);
+
+    ResponseEntity<String> check(UUID id);
 }

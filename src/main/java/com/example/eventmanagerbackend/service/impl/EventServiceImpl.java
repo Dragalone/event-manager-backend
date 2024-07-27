@@ -19,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -34,6 +36,7 @@ public class EventServiceImpl implements EventService {
     private final EventMapper eventMapper;
 
     private final EventRepository repository;
+    private final EventRepository eventRepository;
 
     @Override
     public ModelListResponse<EventResponse>findAll(Pageable pageable) {
@@ -135,6 +138,26 @@ public class EventServiceImpl implements EventService {
                 .data(events.stream().map(eventMapper::eventToResponse).toList())
                 .build();
     }
+
+    // TODO ПЕРЕДЕЛАТЬ ПО-ЧЕЛОВЕЧЕСКИ
+    @Override
+    public ResponseEntity<String> check(UUID id) {
+        try {
+            Event event = eventRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Event with ID " + id + " not found!"));
+
+            if (event.getRegOpen()) {
+                return ResponseEntity.ok("Registration is open.");
+            } else {
+                return ResponseEntity.badRequest().body("Registration is closed.");
+            }
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event with ID " + id + " not found!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+        }
+    }
+
 
 
 }

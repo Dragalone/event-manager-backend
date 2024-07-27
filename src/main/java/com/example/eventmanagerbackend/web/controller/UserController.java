@@ -2,6 +2,7 @@ package com.example.eventmanagerbackend.web.controller;
 
 import com.example.eventmanagerbackend.entity.RoleType;
 import com.example.eventmanagerbackend.repository.RoleTypeRepository;
+import com.example.eventmanagerbackend.repository.UserRepository;
 import com.example.eventmanagerbackend.service.UserService;
 import com.example.eventmanagerbackend.web.dto.request.PaginationRequest;
 import com.example.eventmanagerbackend.web.dto.request.UpsertDefaultUserRequest;
@@ -26,6 +27,7 @@ public class UserController {
 
     private final UserService userService;
     private final RoleTypeRepository roleTypeRepository;
+    private final UserRepository userRepository;
 
     @PostMapping
     public ResponseEntity<UserResponse> createDefaultUser(@RequestBody UpsertDefaultUserRequest request){
@@ -67,6 +69,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(roleTypeRepository.findAll());
     }
+
 
 
 }
