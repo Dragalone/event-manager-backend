@@ -79,7 +79,7 @@ public class DocumentService {
                 templateContent = templateOpt.get().getTemptext();
             }
         }
-        String url = "http://77.222.38.40/event-member-info/" + context.get("memberId");
+        String url = "http://mkrit.ru/event-member-info/" + context.get("memberId");
         BufferedImage qrCodeImage = qrCodeGenerator.generateQrCode(url);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
