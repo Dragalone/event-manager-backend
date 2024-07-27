@@ -1,10 +1,10 @@
 package com.example.eventmanagerbackend.web.controller;
 
-
 import com.example.eventmanagerbackend.entity.Approvement;
 import com.example.eventmanagerbackend.entity.Event;
 import com.example.eventmanagerbackend.entity.EventMember;
 import com.example.eventmanagerbackend.entity.Type;
+import com.example.eventmanagerbackend.exception.EntityNotFoundException;
 import com.example.eventmanagerbackend.repository.EventMemberRepository;
 import com.example.eventmanagerbackend.repository.EventRepository;
 import com.example.eventmanagerbackend.service.EventService;
@@ -13,8 +13,12 @@ import com.example.eventmanagerbackend.web.dto.response.EventResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.lowagie.text.DocumentException;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -22,9 +26,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.ByteArrayInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -121,4 +127,50 @@ public class DocumentController {
                 .body(new InputStreamResource(bis));
     }
 
+
+    @GetMapping("/csv/{eventId}")
+    public ResponseEntity<?> generateCSV(@PathVariable UUID eventId) {
+        String filename = eventRepository.findById(eventId)
+                .orElseThrow(() -> new EntityNotFoundException("Event with ID " + eventId + " not found!"))
+                .getName() + ".csv";
+
+        try {
+            // Получаем одобренных участников
+            Page<EventMember> approvedMembers = eventMemberRepository.findByEventIdAndApprovement(eventId, Approvement.APPROVED, Pageable.unpaged());
+
+            // Создаем временный файл
+            Path tempFile = Files.createTempFile(filename, ".csv");
+            FileWriter fileWriter = new FileWriter(tempFile.toFile());
+
+            // Определяем заголовки и данные
+            String[] headers = { "ID", "First Name", "Last Name", "Company", "Position", "Email", "Phone" };
+
+            try (CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.withHeader(headers))) {
+                for (EventMember member : approvedMembers) {
+                    csvPrinter.printRecord(
+                            member.getId(),
+                            member.getFirstname(),
+                            member.getLastname(),
+                            member.getCompany(),
+                            member.getPosition(),
+                            member.getEmail(),
+                            member.getPhone()
+                    );
+                }
+            }
+
+            // Создаем ресурс для отдачи пользователю
+            Resource resource = new FileSystemResource(tempFile.toFile());
+
+            // Удаляем временный файл после передачи
+            Files.delete(tempFile);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                    .contentType(MediaType.parseMediaType("text/csv"))
+                    .body(resource);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error generating CSV file.");
+        }
+    }
 }
