@@ -38,6 +38,9 @@ public class UpsertMassMediaRequest {
     private String equipment;
 
     @NotNull
+    private String email;
+
+    @NotNull
     private Approvement approvement;
 
     @NotNull

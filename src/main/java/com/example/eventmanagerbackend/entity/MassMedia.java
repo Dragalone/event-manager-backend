@@ -42,6 +42,9 @@ public class MassMedia {
     @Column(name = "equipment")
     private String equipment;
 
+    @Column(name = "email")
+    private String email;
+
     @Column(name = "approvement")
     @Enumerated(EnumType.STRING)
     private Approvement approvement;

@@ -34,6 +34,8 @@ public class MassMediaResponse {
 
     private String equipment;
 
+    private String email;
+
     private Approvement approvement;
 
     private UUID eventId;
