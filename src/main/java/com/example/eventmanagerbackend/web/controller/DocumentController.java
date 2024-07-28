@@ -12,9 +12,9 @@ import com.example.eventmanagerbackend.service.document.DocumentService;
 import com.example.eventmanagerbackend.web.dto.response.EventResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.lowagie.text.DocumentException;
+import com.opencsv.CSVWriter;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
@@ -26,15 +26,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.io.ByteArrayInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+
+import java.io.*;
+import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RequestMapping("api/document")
 @RestController
@@ -134,40 +132,47 @@ public class DocumentController {
                 .orElseThrow(() -> new EntityNotFoundException("Event with ID " + eventId + " not found!"))
                 .getName() + ".csv";
 
+        // Используем только ASCII символы для имени файла
+        String asciiFilename = filename.replaceAll("[^\\p{ASCII}]", "_");
+
         try {
             // Получаем одобренных участников
             Page<EventMember> approvedMembers = eventMemberRepository.findByEventIdAndApprovement(eventId, Approvement.APPROVED, Pageable.unpaged());
 
-            // Создаем временный файл
-            Path tempFile = Files.createTempFile(filename, ".csv");
-            FileWriter fileWriter = new FileWriter(tempFile.toFile());
-
             // Определяем заголовки и данные
-            String[] headers = { "ID", "First Name", "Last Name", "Company", "Position", "Email", "Phone" };
+            String[] headers = {"Имя", "Фамилия", "Отчество", "Компания", "Должность", "Email", "Номер телефона", "Мероприятие", "Статус" };
 
-            try (CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.withHeader(headers))) {
+            // Создаем ByteArrayOutputStream для записи данных
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            try (OutputStreamWriter writer = new OutputStreamWriter(baos, StandardCharsets.UTF_8)) {
+
+                // Добавляем BOM для UTF-8
+                writer.write("\uFEFF");
+
+                // Записываем заголовки с использованием точки с запятой в качестве разделителя
+                writer.write(String.join(";", headers) + "\n");
+
+                // Записываем данные
                 for (EventMember member : approvedMembers) {
-                    csvPrinter.printRecord(
-                            member.getId(),
+                    writer.write(String.format("%s;%s;%s;%s;%s;%s;%s;%s;%s\n",
                             member.getFirstname(),
                             member.getLastname(),
+                            member.getMiddlename(),
                             member.getCompany(),
                             member.getPosition(),
                             member.getEmail(),
-                            member.getPhone()
-                    );
+                            member.getPhone(),
+                            member.getEvent().getName(),
+                            member.getStatus().getStatus()));
                 }
             }
 
-            // Создаем ресурс для отдачи пользователю
-            Resource resource = new FileSystemResource(tempFile.toFile());
-
-            // Удаляем временный файл после передачи
-            Files.delete(tempFile);
+            // Создаем поток для отдачи пользователю
+            InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(baos.toByteArray()));
 
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                    .contentType(MediaType.parseMediaType("text/csv"))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + asciiFilename + "\"")
+                    .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
                     .body(resource);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error generating CSV file.");

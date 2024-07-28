@@ -33,11 +33,6 @@ public class EventScheduleService {
             ZonedDateTime eventStartZoned = event.getStartRegistrationDate().atZone(ZoneId.systemDefault());
             LocalDateTime eventStart = eventStartZoned.toLocalDateTime();
 
-            System.out.println("eventEnd" + eventEnd + '\n');
-            System.out.println("eventStart" + eventStart + '\n');
-            System.out.println("event" + event.getCloseRegistrationDate() + '\n');
-
-
             if (event.getRegOpen() && currentDate.isAfter(eventEnd)) {
                 event.setRegOpen(Boolean.FALSE);
             } else if (!event.getRegOpen() && currentDate.isAfter(eventStart) && currentDate.isBefore(eventEnd)) {
@@ -48,7 +43,6 @@ public class EventScheduleService {
         if (!events.isEmpty()) {
             eventRepository.saveAll(events);
         }
-        System.out.println(events);
     }
 
 }

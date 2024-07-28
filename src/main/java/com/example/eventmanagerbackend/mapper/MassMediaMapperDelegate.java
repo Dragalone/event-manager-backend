@@ -5,19 +5,19 @@ import com.example.eventmanagerbackend.exception.EntityNotFoundException;
 import com.example.eventmanagerbackend.repository.EventRepository;
 import com.example.eventmanagerbackend.repository.MassMediaRepository;
 import com.example.eventmanagerbackend.web.dto.request.UpsertMassMediaRequest;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
-
+@Component
 public abstract class MassMediaMapperDelegate implements MassMediaMapper {
 
-    @Autowired
     private MassMediaMapper delegate;
 
-    @Autowired
     private EventRepository eventRepository;
 
-    @Autowired
     private MassMediaRepository massMediaRepository;
 
     @Override

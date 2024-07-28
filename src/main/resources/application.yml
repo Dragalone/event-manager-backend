@@ -1,4 +1,5 @@
 spring:
+
   thymeleaf:
     prefix: "classpath:/templates/:"
   jpa:
@@ -37,6 +38,8 @@ jwt:
     access: qBTmv4oXFFR2GwjexDJ4t6fsIUIUhhXqlktXjXdkcyygs8nPVEwMfo29VDRRepYDVV5IkIxBMzr7OEHXEHd37w
     refresh: zL1HB3Pch05Avfynovxrf/kpF9O2m4NCWKJUjEp27s9J2jEG3ifiKCGylaZ8fDeoONSTJP/wAzKawB8F9rOMNg
 
+
+
 logging:
   level:
     org:
@@ -44,4 +47,4 @@ logging:
         web: DEBUG
         security: DEBUG
 
-interval-delete-event-cron: 0 * * * * * # секунда минута час день месяца, месяц, день недели, год
+interval-delete-event-cron: '*/10 * * * * *'

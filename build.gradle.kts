@@ -65,6 +65,11 @@ dependencies {
 
     implementation("org.apache.commons:commons-csv:1.10.0")
 
+    implementation("com.opencsv:opencsv:5.8")
+
+    implementation("org.apache.poi:poi-ooxml:5.2.3")
+    implementation("org.jxls:jxls:2.12.0")
+
 }
 
 tasks.withType<Test> {

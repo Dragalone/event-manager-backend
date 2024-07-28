@@ -36,4 +36,6 @@ public class MassMediaResponse {
 
     private Approvement approvement;
 
+    private UUID eventId;
+
 }

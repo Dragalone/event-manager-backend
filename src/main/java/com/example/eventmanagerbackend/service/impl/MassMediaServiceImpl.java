@@ -7,6 +7,7 @@ import com.example.eventmanagerbackend.repository.MassMediaRepository;
 import com.example.eventmanagerbackend.service.MassMediaService;
 import com.example.eventmanagerbackend.web.dto.request.MassMediaFilterRequest;
 import com.example.eventmanagerbackend.web.dto.request.UpsertMassMediaRequest;
+import com.example.eventmanagerbackend.web.dto.response.EventMemberResponse;
 import com.example.eventmanagerbackend.web.dto.response.MassMediaResponse;
 import com.example.eventmanagerbackend.web.dto.response.ModelListResponse;
 import lombok.AllArgsConstructor;
@@ -31,9 +32,9 @@ public class MassMediaServiceImpl implements MassMediaService {
     public ModelListResponse<MassMediaResponse> findAll(Pageable pageable) {
         log.info("Find all MassMedia");
         Page<MassMedia> massMedia = repository.findAll(pageable);
-        return ModelListResponse.builder()
+        return ModelListResponse.<MassMediaResponse>builder()
                 .totalCount(massMedia.getTotalElements())
-                .data(massMedia.stream().map(MassMediaMapper::massMediaToResponse).toList())
+                .data(massMedia.stream().map(massMediaMapper::massMediaToResponse).toList())
                 .build();
     }
 
