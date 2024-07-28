@@ -17,6 +17,4 @@ public class RoleType {
 
     @Column(name = "role")
     private String name;
-
-
 }

@@ -1,0 +1,9 @@
+package com.example.eventmanagerbackend.web.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("/api/v1/media")
+public class MassMediaController {
+}
