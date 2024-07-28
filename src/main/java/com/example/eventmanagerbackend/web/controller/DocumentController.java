@@ -1,12 +1,10 @@
 package com.example.eventmanagerbackend.web.controller;
 
-import com.example.eventmanagerbackend.entity.Approvement;
-import com.example.eventmanagerbackend.entity.Event;
-import com.example.eventmanagerbackend.entity.EventMember;
-import com.example.eventmanagerbackend.entity.Type;
+import com.example.eventmanagerbackend.entity.*;
 import com.example.eventmanagerbackend.exception.EntityNotFoundException;
 import com.example.eventmanagerbackend.repository.EventMemberRepository;
 import com.example.eventmanagerbackend.repository.EventRepository;
+import com.example.eventmanagerbackend.repository.MassMediaRepository;
 import com.example.eventmanagerbackend.service.EventService;
 import com.example.eventmanagerbackend.service.document.DocumentService;
 import com.example.eventmanagerbackend.web.dto.response.EventResponse;
@@ -46,6 +44,8 @@ public class DocumentController {
     private EventMemberRepository eventMemberRepository;
     @Autowired
     private EventRepository eventRepository;
+    @Autowired
+    private MassMediaRepository massMediaRepository;
 
     @GetMapping(value = "/word/{member-id}",
             produces = "application/vnd.openxmlformats-"
@@ -178,4 +178,59 @@ public class DocumentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error generating CSV file.");
         }
     }
+
+    @GetMapping("/csv/media/{eventId}")
+    public ResponseEntity<?> generateMediaCSV(@PathVariable UUID eventId) {
+        String filename = eventRepository.findById(eventId)
+                .orElseThrow(() -> new EntityNotFoundException("Event with ID " + eventId + " not found!"))
+                .getName() + ".csv";
+
+        // Используем только ASCII символы для имени файла
+        String asciiFilename = filename.replaceAll("[^\\p{ASCII}]", "_");
+
+        try {
+            // Получаем одобренных участников
+            Page<MassMedia> approvedMassMedia = massMediaRepository.findByEventIdAndApprovement(eventId, Approvement.APPROVED, Pageable.unpaged());
+
+            // Определяем заголовки и данные
+            String[] headers = {"Имя", "Фамилия", "Отчество", "Компания", "Должность", "Email", "Оборудование", "Серия паспорта", "Номер паспорта", "Мероприятие" };
+
+            // Создаем ByteArrayOutputStream для записи данных
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            try (OutputStreamWriter writer = new OutputStreamWriter(baos, StandardCharsets.UTF_8)) {
+
+                // Добавляем BOM для UTF-8
+                writer.write("\uFEFF");
+
+                // Записываем заголовки с использованием точки с запятой в качестве разделителя
+                writer.write(String.join(";", headers) + "\n");
+
+                // Записываем данные
+                for (MassMedia massMedia : approvedMassMedia) {
+                    writer.write(String.format("%s;%s;%s;%s;%s;%s;%s;%s;%s\n",
+                            massMedia.getFirstname(),
+                            massMedia.getLastname(),
+                            massMedia.getMiddlename(),
+                            massMedia.getCompany(),
+                            massMedia.getPosition(),
+                            massMedia.getEmail(),
+                            massMedia.getEquipment(),
+                            massMedia.getPassportNumber(),
+                            massMedia.getPassportSeries(),
+                            massMedia.getEvent().getName()));
+                }
+            }
+
+            // Создаем поток для отдачи пользователю
+            InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(baos.toByteArray()));
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + asciiFilename + "\"")
+                    .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                    .body(resource);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error generating CSV file.");
+        }
+    }
+
 }
