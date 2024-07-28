@@ -13,9 +13,10 @@ import org.springframework.stereotype.Component;
 import java.text.MessageFormat;
 
 public abstract class MassMediaMapperDelegate implements MassMediaMapper {
+
     @Autowired
     private MassMediaMapper delegate;
-     @Autowired
+    @Autowired
     private EventRepository eventRepository;
     @Autowired
     private MassMediaRepository massMediaRepository;

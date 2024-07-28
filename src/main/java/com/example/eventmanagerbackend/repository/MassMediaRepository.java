@@ -13,7 +13,7 @@ import java.util.UUID;
 @Repository
 public interface MassMediaRepository extends JpaRepository<MassMedia, UUID>, JpaSpecificationExecutor<MassMedia> {
 
-    Page<MassMedia> findAllByByEventId(UUID eventId, Pageable pageable);
+    Page<MassMedia> findAllByEventId(UUID eventId, Pageable pageable);
 
     Page<MassMedia> findByEventIdAndApprovement(UUID eventId, Approvement approvement, Pageable pageable);
 }
