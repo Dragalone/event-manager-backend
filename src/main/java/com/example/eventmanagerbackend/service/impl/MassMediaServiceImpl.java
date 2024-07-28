@@ -6,7 +6,9 @@ import com.example.eventmanagerbackend.entity.MassMedia;
 import com.example.eventmanagerbackend.exception.EntityNotFoundException;
 import com.example.eventmanagerbackend.exception.RegistrationClosedException;
 import com.example.eventmanagerbackend.mapper.MassMediaMapper;
+import com.example.eventmanagerbackend.repository.EventMemberSpecification;
 import com.example.eventmanagerbackend.repository.MassMediaRepository;
+import com.example.eventmanagerbackend.repository.MassMediaSpecification;
 import com.example.eventmanagerbackend.service.MassMediaService;
 import com.example.eventmanagerbackend.web.dto.request.MassMediaFilterRequest;
 import com.example.eventmanagerbackend.web.dto.request.UpsertMassMediaRequest;
@@ -104,7 +106,12 @@ public class MassMediaServiceImpl implements MassMediaService {
 
     @Override
     public ModelListResponse<MassMediaResponse> filterBy(MassMediaFilterRequest filter) {
-        return null;
+        log.info("Find events members with filter: {}",filter);
+        Page<MassMedia> massMedia = repository.findAll(MassMediaSpecification.withFilter(filter), filter.getPagination().pageRequest());
+        return ModelListResponse.<MassMediaResponse>builder()
+                .totalCount(massMedia.getTotalElements())
+                .data(massMedia.stream().map(massMediaMapper::massMediaToResponse).toList())
+                .build();
     }
 
     protected MassMedia updateFields(MassMedia oldEntity, MassMedia newEntity) {

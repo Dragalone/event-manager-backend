@@ -12,6 +12,7 @@ import com.example.eventmanagerbackend.web.dto.response.ModelListResponse;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,6 +24,7 @@ import java.util.UUID;
 @RequestMapping(path = "/api/v1/media", produces = "application/json")
 @CrossOrigin
 @RequiredArgsConstructor
+@Slf4j
 public class MassMediaController {
 
     private final MassMediaService massMediaService;
@@ -33,6 +35,7 @@ public class MassMediaController {
                                                                          @Nullable @RequestParam Approvement approvement,
                                                                          @Nullable @RequestParam UUID eventId)
     {
+        log.info("FILTER {} {} {} {}", paginationRequest, searchQuery, approvement, eventId);
         MassMediaFilterRequest filter = new MassMediaFilterRequest(paginationRequest,searchQuery,approvement,eventId);
         return ResponseEntity.ok(
                 massMediaService.filterBy(filter)
