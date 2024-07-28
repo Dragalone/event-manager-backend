@@ -11,13 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
-@Component
+
 public abstract class MassMediaMapperDelegate implements MassMediaMapper {
-
+    @Autowired
     private MassMediaMapper delegate;
-
+     @Autowired
     private EventRepository eventRepository;
-
+    @Autowired
     private MassMediaRepository massMediaRepository;
 
     @Override
