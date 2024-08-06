@@ -1,5 +1,7 @@
 package com.example.eventmanagerbackend.web.controller;
 
+import com.example.eventmanagerbackend.aop.AccessCheckType;
+import com.example.eventmanagerbackend.aop.Accessible;
 import com.example.eventmanagerbackend.entity.Event;
 import com.example.eventmanagerbackend.entity.EventMember;
 import com.example.eventmanagerbackend.exception.EntityNotFoundException;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Console;
@@ -32,8 +35,8 @@ import java.util.UUID;
 @CrossOrigin()
 public class EventController {
     private final EventService eventService;
-    private final EventRepository eventRepository;
 
+    //TODO Сделать нормальную защиту эндпоинта filterBy
     @GetMapping
     public ResponseEntity<ModelListResponse<EventResponse>> filterBy(@Valid PaginationRequest paginationRequest,
                                                                      @Nullable @RequestParam String name,
@@ -47,6 +50,7 @@ public class EventController {
         );
     }
     @GetMapping("/{id}")
+    @Accessible(checkBy = AccessCheckType.EVENT, availableForAdmin = true)
     public ResponseEntity<EventResponse> getById(@PathVariable UUID id){
         return ResponseEntity.ok(
                 eventService.findById(id)
@@ -60,6 +64,7 @@ public class EventController {
     }
 
     @PutMapping("/{id}")
+    @Accessible(checkBy = AccessCheckType.EVENT, availableForAdmin = true)
     public ResponseEntity<EventResponse> updateEvent(@PathVariable UUID id, @RequestBody UpsertEventRequest request){
         System.out.println(request);
         return ResponseEntity.ok(
@@ -68,12 +73,14 @@ public class EventController {
     }
 
     @DeleteMapping("/{id}")
+    @Accessible(checkBy = AccessCheckType.EVENT, availableForAdmin = true)
     public ResponseEntity<Void> deleteEvent(@PathVariable UUID id){
         eventService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}/check")
+    @Accessible(checkBy = AccessCheckType.EVENT, availableForAdmin = true)
     public ResponseEntity<String> checkEvent(@PathVariable UUID id) {
         return eventService.check(id);
     }

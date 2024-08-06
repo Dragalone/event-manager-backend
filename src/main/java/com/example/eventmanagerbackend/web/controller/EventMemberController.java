@@ -1,5 +1,7 @@
 package com.example.eventmanagerbackend.web.controller;
 
+import com.example.eventmanagerbackend.aop.AccessCheckType;
+import com.example.eventmanagerbackend.aop.Accessible;
 import com.example.eventmanagerbackend.entity.Approvement;
 import com.example.eventmanagerbackend.service.EventMemberService;
 import com.example.eventmanagerbackend.web.dto.request.*;
@@ -25,6 +27,8 @@ public class EventMemberController {
 
     private final EventMemberService eventMemberService;
 
+
+    //TODO Сделать нормальную защиту эндпоинта filterBy
     @GetMapping
     public ResponseEntity<ModelListResponse<EventMemberResponse>> filterBy(@Valid PaginationRequest paginationRequest,
                                                                      @Nullable @RequestParam String searchQuery,
@@ -37,6 +41,7 @@ public class EventMemberController {
     }
 
     @GetMapping("/{id}")
+    @Accessible(checkBy = AccessCheckType.EVENT_MEMBER, availableForAdmin = true)
     public ResponseEntity<EventMemberResponse> getById(@PathVariable UUID id){
         return ResponseEntity.ok(
                 eventMemberService.findById(id)
@@ -58,6 +63,7 @@ public class EventMemberController {
     }
 
     @PutMapping("/{id}")
+    @Accessible(checkBy = AccessCheckType.EVENT_MEMBER, availableForAdmin = true)
     public ResponseEntity<EventMemberResponse> updateEventMember(@PathVariable UUID id, @RequestBody UpsertEventMemberRequest request){
         System.out.println(request.getStatusId());
         return ResponseEntity.ok(
@@ -66,12 +72,14 @@ public class EventMemberController {
     }
 
     @DeleteMapping("/{id}")
+    @Accessible(checkBy = AccessCheckType.EVENT_MEMBER, availableForAdmin = true)
     public ResponseEntity<Void> deleteEventMember(@PathVariable UUID id){
         eventMemberService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/approvement/{id}")
+    @Accessible(checkBy = AccessCheckType.EVENT_MEMBER, availableForAdmin = true)
     public ResponseEntity<EventResponse> setEventMemberApprovement(@PathVariable UUID id, @RequestParam String approvement){
         eventMemberService.setApprovment(id, Approvement.valueOf(approvement));
         return ResponseEntity.noContent().build();

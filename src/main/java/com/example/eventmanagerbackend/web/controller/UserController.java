@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public class UserController {
     }
 
     @PostMapping("/admin")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_ORGANIZATOR')")
     public ResponseEntity<UserResponse> createUser(@RequestBody UpsertUserRequest request){
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.create(request));

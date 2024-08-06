@@ -16,4 +16,6 @@ public interface EventRepository extends JpaRepository<Event, UUID>, JpaSpecific
     Page<Event> findAllByOrganizerId(UUID id, Pageable pageable);
 
     Page<Event> findAllByOrganizerId(UUID id, Pageable pageable,Specification<Event> specification);
+
+    boolean existsByIdAndOrganizerId(UUID id, UUID organizerId);
 }

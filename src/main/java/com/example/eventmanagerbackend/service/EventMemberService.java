@@ -21,6 +21,8 @@ public interface EventMemberService extends EntityService<EventMemberResponse, U
 
     EventMemberResponse createMemberOnConsideration(UpsertOnConsiderationEventMemberRequest entityRequest);
 
+
+
     ModelListResponse<EventMemberResponse> findMembersByEventId(UUID eventId, Pageable pageable);
 
 }

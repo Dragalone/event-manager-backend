@@ -1,5 +1,7 @@
 package com.example.eventmanagerbackend.configuration;
 
+import com.example.eventmanagerbackend.aop.AccessCheckType;
+import com.example.eventmanagerbackend.service.AccessCheckerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -7,6 +9,11 @@ import org.springframework.context.annotation.Configuration;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
 @Configuration
@@ -45,6 +52,11 @@ public class AppConfiguration {
         // for safer backwards compatibility.
         templateEngine.setEnableSpringELCompiler(true);
         return templateEngine;
+    }
+
+    @Bean
+    public Map<AccessCheckType, AccessCheckerService> accessCheckerServices(Collection<AccessCheckerService> checkerServices) {
+        return checkerServices.stream().collect(Collectors.toMap(AccessCheckerService::getType, Function.identity()));
     }
 
 }
