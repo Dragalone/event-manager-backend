@@ -19,7 +19,7 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@EnableMethodSecurity(securedEnabled = true)
+@EnableMethodSecurity
 public class SecurityConfiguration {
 
     private final JwtFilter jwtFilter;
@@ -53,7 +53,7 @@ public class SecurityConfiguration {
                     request.requestMatchers("/api/templates/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_ORGANIZATOR");
 
                     //TODO ИСПРАВИТЬ ЭТУ ДИЧЬ ->
-                    request.requestMatchers(HttpMethod.POST, "/api/v1/users/admin").permitAll();
+                    request.requestMatchers(HttpMethod.POST, "/api/v1/users/admin").hasAnyAuthority("ROLE_ADMIN");
                     request.requestMatchers("api/v1/users/**").hasAnyAuthority("ROLE_ADMIN");
 
                     request.requestMatchers("api/v1/event-members/admin").hasAnyAuthority("ROLE_ADMIN");

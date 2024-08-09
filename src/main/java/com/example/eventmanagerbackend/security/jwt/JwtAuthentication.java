@@ -26,6 +26,12 @@ public class JwtAuthentication implements Authentication {
     private UUID userId;
     private Set<RoleType> roles;
 
+    public boolean hasAnyRole(Collection<String> rolesNames) {
+        return roles.stream()
+                .map(RoleType::getName)
+                .anyMatch(rolesNames::contains);
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()

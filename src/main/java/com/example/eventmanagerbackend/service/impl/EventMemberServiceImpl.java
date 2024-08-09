@@ -130,6 +130,8 @@ public class EventMemberServiceImpl implements EventMemberService {
         );
     }
 
+
+
     @Override
     public void deleteById(UUID id) {
         log.info("Delete event member with ID: {}", id);

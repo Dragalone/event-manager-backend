@@ -55,26 +55,26 @@ public class JwtFilter extends GenericFilterBean {
                 }
                 SecurityContextHolder.getContext().setAuthentication(jwtInfoToken);
                 logCurrentUserRoles(jwtInfoToken);
-                if (jwtInfoToken.getRoles().stream()
-                        .anyMatch(role -> role.getName().equals(ROLE_ORGANIZATOR))) {
-
-                    UUID eventId = getEventIdFromRequest(httpRequest);
-                    System.out.println("eventId = " + eventId);
-                    if (eventId != null) {
-                        if (!checkOrganizerPermission(eventId, userIdFromToken)) {
-                            ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN, "You are not authorized to access this event");
-                            return;
-                        }
-                    }
-                    UUID orgId = getOrgIdFromRequest(httpRequest);
-                    System.out.println("orgId = " + orgId);
-                    if (orgId != null) {
-                        if (!userIdFromToken.equals(orgId)) {
-                            ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN, "You are not authorized to access this event");
-                            return;
-                        }
-                    }
-                }
+//                if (jwtInfoToken.getRoles().stream()
+//                        .anyMatch(role -> role.getName().equals(ROLE_ORGANIZATOR))) {
+//
+//                    UUID eventId = getEventIdFromRequest(httpRequest);
+//                    System.out.println("eventId = " + eventId);
+//                    if (eventId != null) {
+//                        if (!checkOrganizerPermission(eventId, userIdFromToken)) {
+//                            ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN, "You are not authorized to access this event");
+//                            return;
+//                        }
+//                    }
+//                    UUID orgId = getOrgIdFromRequest(httpRequest);
+//                    System.out.println("orgId = " + orgId);
+//                    if (orgId != null) {
+//                        if (!userIdFromToken.equals(orgId)) {
+//                            ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN, "You are not authorized to access this event");
+//                            return;
+//                        }
+//                    }
+//                }
             }
             fc.doFilter(request, response);
         } catch (ExpiredJwtException e) {

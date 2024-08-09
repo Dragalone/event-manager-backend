@@ -20,4 +20,5 @@ public interface EventService extends EntityService<EventResponse,UpsertEventReq
     ModelListResponse<EventResponse> filterBy(EventFilterRequest filter);
 
     ResponseEntity<String> check(UUID id);
+
 }
