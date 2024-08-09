@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface MassMediaSpecification {
+
     static Specification<MassMedia> withFilter(MassMediaFilterRequest filter){
         return Specification.where(byAllFields(filter.getSearchQuery()))
                 .and(byEventId(filter.getEventId()))

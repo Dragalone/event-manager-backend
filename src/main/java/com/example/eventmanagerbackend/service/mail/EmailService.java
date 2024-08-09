@@ -2,13 +2,11 @@ package com.example.eventmanagerbackend.service.mail;
 
 
 
-import com.example.eventmanagerbackend.entity.Event;
-import com.example.eventmanagerbackend.entity.EventMember;
-import com.example.eventmanagerbackend.entity.TemplateEntity;
-import com.example.eventmanagerbackend.entity.Type;
+import com.example.eventmanagerbackend.entity.*;
 import com.example.eventmanagerbackend.exception.EntityNotFoundException;
 import com.example.eventmanagerbackend.repository.EventMemberRepository;
 import com.example.eventmanagerbackend.repository.EventRepository;
+import com.example.eventmanagerbackend.repository.WaiterRepository;
 import com.example.eventmanagerbackend.service.EventService;
 import com.example.eventmanagerbackend.service.document.DocumentService;
 import com.example.eventmanagerbackend.service.template.TemplateService;
@@ -57,8 +55,11 @@ public class EmailService {
     private final JavaMailSender emailSender;
 
     private final SpringTemplateEngine templateEngine;
+
     private final EventMemberRepository eventMemberRepository;
     private final EventRepository eventRepository;
+    private final WaiterRepository waiterRepository;
+
     private final TemplateService templateService;
     private final DocumentService documentService;
 
@@ -217,6 +218,55 @@ public class EmailService {
 
         emailSender.send(message);
     }
+
+    public void sendAlert(UUID waiterId)  throws MessagingException
+    {
+        Waiter waiter = waiterRepository.findById(waiterId).orElseThrow(() ->
+                new EntityNotFoundException(
+                        MessageFormat.format("Waiter with ID {0} now founded", waiterId)
+                ));
+        Event event = eventRepository.findById(waiter.getEvent().getId())
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+        String templateContent = "";
+
+        // Подготовка контекста для шаблона
+        Map<String, Object> templateContext = new HashMap<>();
+        templateContext.put("ивент_дата", event.getDate());
+        templateContext.put("ивент_имя", event.getName());
+        templateContext.put("ивент_описание", event.getSummary());
+        templateContext.put("ивент_адрес", event.getAddress());
+
+        // Настройка контекста email
+        AbstractEmailContext emailContext = new EmailContext();
+        emailContext.setContext(templateContext);
+        emailContext.setTo(waiter.getEmail());
+        emailContext.setSubject("Открытие регистрации на: " + event.getName());
+        emailContext.setTemplateLocation(templateContent); // Используем содержимое шаблона напрямую
+        MimeMessage message = emailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message,
+                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                StandardCharsets.UTF_8.name());
+
+        // Create Mustache context
+        Map<String, Object> context = new HashMap<>(emailContext.getContext());
+
+        // Compile Mustache template from HTML content
+        MustacheFactory mf = new DefaultMustacheFactory();
+        Mustache mustache = mf.compile(new StringReader(emailContext.getTemplateLocation()), "template");
+
+        // Execute template rendering
+        StringWriter writer = new StringWriter();
+        mustache.execute(writer, context);
+        String emailContent = writer.toString();
+
+        mimeMessageHelper.setTo(emailContext.getTo());
+        mimeMessageHelper.setSubject(emailContext.getSubject());
+        mimeMessageHelper.setText(emailContent, true);
+
+        emailSender.send(message);
+    }
+
+
 
 // UNUSED FUNCTIONS
 //    public void sendSimpleEmail(String toAddress, String subject, String message) {
