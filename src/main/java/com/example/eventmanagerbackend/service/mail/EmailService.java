@@ -229,12 +229,26 @@ public class EmailService {
                 .orElseThrow(() -> new RuntimeException("Event not found"));
         String templateContent = "";
 
+        Optional<TemplateEntity> templateOpt = templateService.getTemplateByEventIdAndType(waiter.getEvent().getId(), Type.GREETINGS);
+        if (templateOpt.isEmpty()) {
+            try {
+                Resource resource = new ClassPathResource("templates/email_allert.html");
+                templateContent = Files.readString(Paths.get(resource.getURI()));
+            } catch (IOException e) {
+                new ResponseEntity<>("Unable to load default template", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            templateContent = templateOpt.get().getTemptext(); // Получаем содержимое шаблона из базы данных
+        }
+
         // Подготовка контекста для шаблона
         Map<String, Object> templateContext = new HashMap<>();
         templateContext.put("ивент_дата", event.getDate());
         templateContext.put("ивент_имя", event.getName());
         templateContext.put("ивент_описание", event.getSummary());
         templateContext.put("ивент_адрес", event.getAddress());
+        //TODO ГОВНО
+        templateContext.put("ссылка", "https://mkrit.ru/"+event.getId()+"/registration-form/");
 
         // Настройка контекста email
         AbstractEmailContext emailContext = new EmailContext();

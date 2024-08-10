@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -30,6 +31,7 @@ public class EventScheduleService {
     }
 
     @Scheduled(cron = "${interval-delete-event-cron}")
+    @Transactional
     public void changeRegistrationStatus() {
         log.info("Change events registration status");
         LocalDateTime currentDate = LocalDateTime.now(); // текущая дата и время
