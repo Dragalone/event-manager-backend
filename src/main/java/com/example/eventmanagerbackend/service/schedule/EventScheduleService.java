@@ -7,6 +7,7 @@ import com.example.eventmanagerbackend.service.mail.EmailService;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
+@Slf4j
 public class EventScheduleService {
 
     private final EventRepository eventRepository;
@@ -29,6 +31,7 @@ public class EventScheduleService {
 
     @Scheduled(cron = "${interval-delete-event-cron}")
     public void changeRegistrationStatus() {
+        log.info("Change events registration status");
         LocalDateTime currentDate = LocalDateTime.now(); // текущая дата и время
         List<Event> events = eventRepository.findAll();
 
@@ -39,14 +42,17 @@ public class EventScheduleService {
             LocalDateTime eventStart = eventStartZoned.toLocalDateTime();
 
             if (event.getRegOpen() && currentDate.isAfter(eventEnd)) {
+                log.info("Event with ID {} close registration", event.getId());
                 event.setRegOpen(Boolean.FALSE);
             } else if (!event.getRegOpen() && currentDate.isAfter(eventStart) && currentDate.isBefore(eventEnd)) {
+                log.info("Event with ID {} open registration", event.getId());
                 event.setRegOpen(Boolean.TRUE);
 
                 List<Waiter> waiters = event.getWaiters();
                 waiters.forEach(waiter -> {
                     try {
                         emailService.sendAlert(waiter.getId());
+                        log.info("Send allert to waiter with  ID {}", waiter.getId());
                     } catch (MessagingException e) {
                         throw new RuntimeException(e);
                     }
