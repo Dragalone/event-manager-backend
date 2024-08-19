@@ -45,7 +45,7 @@ public class SecurityConfiguration {
 //                    request.requestMatchers("/info").authenticated();
 //                    request.requestMatchers("/login").permitAll();
                     //TODO ПЕРЕПИСАТЬ НОРМАЛЬНО
-                    request.requestMatchers(HttpMethod.PUT, "/api/v1/users/admin").permitAll(); // Переместите выше//
+                    request.requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll();
                     request.requestMatchers(HttpMethod.POST, "/api/v1/event-members").permitAll(); // Переместите выше
                     request.requestMatchers("/api/email/**").permitAll();
                     request.requestMatchers("/api/auth/**").permitAll();

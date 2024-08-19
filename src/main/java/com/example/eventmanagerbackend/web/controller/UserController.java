@@ -66,6 +66,14 @@ public class UserController {
 
     //TODO
     // Переписать
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> getUserById(@PathVariable UUID id){
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .body(userService.findById(id));
+    }
+
+    //TODO
+    // Переписать
     @GetMapping("/getRoles")
     public ResponseEntity<List<RoleType>> getAllRoles(){
         return ResponseEntity.status(HttpStatus.CREATED)
