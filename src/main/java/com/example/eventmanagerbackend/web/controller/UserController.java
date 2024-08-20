@@ -68,7 +68,7 @@ public class UserController {
     // Переписать
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable UUID id){
-        return ResponseEntity.status(HttpStatus.FOUND)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.findById(id));
     }
 
