@@ -16,28 +16,26 @@ public class MemberStatusController {
 
     private final MemberStatusService memberStatusService;
 
-    @GetMapping("/getAll")
+    @GetMapping()
     public List<MemberStatus> getAllStatus()
     {
         return memberStatusService.getAllStatus();
     }
 
-    @GetMapping("/findById")
-    public MemberStatus getStatusById( @RequestParam UUID id)
+    @GetMapping("/{id}")
+    public MemberStatus getStatusById( @PathVariable UUID id)
     {
         return memberStatusService.getStatusById(id);
-
     }
 
-    @PostMapping("/addStatus")
+    @PostMapping()
     public void createNewStatus( @RequestParam String statusName)
     {
-
         memberStatusService.createNewStatus(statusName);
     }
 
-    @PostMapping("/deleteStatus")
-    public void deleteStatus(@RequestParam UUID id)
+    @DeleteMapping("/{id}")
+    public void deleteStatus(@PathVariable UUID id)
     {
         memberStatusService.deleteStatusById(id);
     }

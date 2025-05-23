@@ -247,7 +247,7 @@ public class EmailService {
         templateContext.put("ивент_имя", event.getName());
         templateContext.put("ивент_описание", event.getSummary());
         templateContext.put("ивент_адрес", event.getAddress());
-        //TODO ГОВНО
+
         templateContext.put("ссылка", "https://mkrit.ru/"+event.getId()+"/registration-form/");
 
         // Настройка контекста email

@@ -56,24 +56,18 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    //TODO
-    // Переписать под фильтры
     @GetMapping
     public ResponseEntity<ModelListResponse<UserResponse>> getAllUsers(@Valid PaginationRequest paginationRequest){
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.findAll(paginationRequest.pageRequest()));
     }
 
-    //TODO
-    // Переписать
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable UUID id){
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.findById(id));
     }
 
-    //TODO
-    // Переписать
     @GetMapping("/getRoles")
     public ResponseEntity<List<RoleType>> getAllRoles(){
         return ResponseEntity.status(HttpStatus.CREATED)

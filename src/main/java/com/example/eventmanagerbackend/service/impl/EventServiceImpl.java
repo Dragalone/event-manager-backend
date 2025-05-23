@@ -139,7 +139,6 @@ public class EventServiceImpl implements EventService {
                 .build();
     }
 
-    // TODO ПЕРЕДЕЛАТЬ ПО-ЧЕЛОВЕЧЕСКИ
     @Override
     public ResponseEntity<String> check(UUID id) {
         try {

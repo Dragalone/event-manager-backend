@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/templates")
+@RequestMapping("/api/v1/templates")
 public class TemplateController {
 
     private final TemplateService templateService;

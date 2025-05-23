@@ -32,7 +32,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-@RequestMapping("api/document")
+@RequestMapping("api/v1/document")
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin
@@ -47,10 +47,10 @@ public class DocumentController {
     @Autowired
     private MassMediaRepository massMediaRepository;
 
-    @GetMapping(value = "/word/{member-id}",
+    @GetMapping(value = "/word/{memberId}",
             produces = "application/vnd.openxmlformats-"
                     + "officedocument.wordprocessingml.document")
-    public ResponseEntity<InputStreamResource> word(@PathVariable("member-id") UUID memberId)
+    public ResponseEntity<InputStreamResource> word(@PathVariable("memberId") UUID memberId)
             throws IOException, InvalidFormatException {
 
         ByteArrayInputStream bis = documentService.generateWordBadge(memberId);
@@ -75,8 +75,8 @@ public class DocumentController {
     }
 */
 
-    @GetMapping("/pdf/qr")
-    public ResponseEntity<InputStreamResource> generatePdf(@RequestParam UUID memberId)
+    @GetMapping("/pdf/qr/{memberId}")
+    public ResponseEntity<InputStreamResource> generatePdf(@PathVariable UUID memberId)
             throws IOException, DocumentException {
         EventMember eventMember = eventMemberRepository.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("Event member not found"));
@@ -104,8 +104,8 @@ public class DocumentController {
                 .body(new InputStreamResource(bis));
     }
 
-    @GetMapping("/pdf/badges")
-    public ResponseEntity<?> generatePdfBadges(@RequestParam UUID eventId)
+    @GetMapping("/pdf/badges/{eventId}")
+    public ResponseEntity<?> generatePdfBadges(@PathVariable UUID eventId)
             throws IOException, DocumentException {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
@@ -179,58 +179,58 @@ public class DocumentController {
         }
     }
 
-    @GetMapping("/csv/media/{eventId}")
-    public ResponseEntity<?> generateMediaCSV(@PathVariable UUID eventId) {
-        String filename = eventRepository.findById(eventId)
-                .orElseThrow(() -> new EntityNotFoundException("Event with ID " + eventId + " not found!"))
-                .getName() + ".csv";
-
-        // Используем только ASCII символы для имени файла
-        String asciiFilename = filename.replaceAll("[^\\p{ASCII}]", "_");
-
-        try {
-            // Получаем одобренных участников
-            Page<MassMedia> approvedMassMedia = massMediaRepository.findByEventIdAndApprovement(eventId, Approvement.APPROVED, Pageable.unpaged());
-
-            // Определяем заголовки и данные
-            String[] headers = {"Имя", "Фамилия", "Отчество", "Компания", "Должность", "Email", "Оборудование", "Серия паспорта", "Номер паспорта", "Мероприятие" };
-
-            // Создаем ByteArrayOutputStream для записи данных
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            try (OutputStreamWriter writer = new OutputStreamWriter(baos, StandardCharsets.UTF_8)) {
-
-                // Добавляем BOM для UTF-8
-                writer.write("\uFEFF");
-
-                // Записываем заголовки с использованием точки с запятой в качестве разделителя
-                writer.write(String.join(";", headers) + "\n");
-
-                // Записываем данные
-                for (MassMedia massMedia : approvedMassMedia) {
-                    writer.write(String.format("%s;%s;%s;%s;%s;%s;%s;%s;%s\n",
-                            massMedia.getFirstname(),
-                            massMedia.getLastname(),
-                            massMedia.getMiddlename(),
-                            massMedia.getCompany(),
-                            massMedia.getPosition(),
-                            massMedia.getEmail(),
-                            massMedia.getEquipment(),
-                            massMedia.getPassportNumber(),
-                            massMedia.getPassportSeries(),
-                            massMedia.getEvent().getName()));
-                }
-            }
-
-            // Создаем поток для отдачи пользователю
-            InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(baos.toByteArray()));
-
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + asciiFilename + "\"")
-                    .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
-                    .body(resource);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error generating CSV file.");
-        }
-    }
+//    @GetMapping("/csv/media/{eventId}")
+//    public ResponseEntity<?> generateMediaCSV(@PathVariable UUID eventId) {
+//        String filename = eventRepository.findById(eventId)
+//                .orElseThrow(() -> new EntityNotFoundException("Event with ID " + eventId + " not found!"))
+//                .getName() + ".csv";
+//
+//        // Используем только ASCII символы для имени файла
+//        String asciiFilename = filename.replaceAll("[^\\p{ASCII}]", "_");
+//
+//        try {
+//            // Получаем одобренных участников
+//            Page<MassMedia> approvedMassMedia = massMediaRepository.findByEventIdAndApprovement(eventId, Approvement.APPROVED, Pageable.unpaged());
+//
+//            // Определяем заголовки и данные
+//            String[] headers = {"Имя", "Фамилия", "Отчество", "Компания", "Должность", "Email", "Оборудование", "Серия паспорта", "Номер паспорта", "Мероприятие" };
+//
+//            // Создаем ByteArrayOutputStream для записи данных
+//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//            try (OutputStreamWriter writer = new OutputStreamWriter(baos, StandardCharsets.UTF_8)) {
+//
+//                // Добавляем BOM для UTF-8
+//                writer.write("\uFEFF");
+//
+//                // Записываем заголовки с использованием точки с запятой в качестве разделителя
+//                writer.write(String.join(";", headers) + "\n");
+//
+//                // Записываем данные
+//                for (MassMedia massMedia : approvedMassMedia) {
+//                    writer.write(String.format("%s;%s;%s;%s;%s;%s;%s;%s;%s\n",
+//                            massMedia.getFirstname(),
+//                            massMedia.getLastname(),
+//                            massMedia.getMiddlename(),
+//                            massMedia.getCompany(),
+//                            massMedia.getPosition(),
+//                            massMedia.getEmail(),
+//                            massMedia.getEquipment(),
+//                            massMedia.getPassportNumber(),
+//                            massMedia.getPassportSeries(),
+//                            massMedia.getEvent().getName()));
+//                }
+//            }
+//
+//            // Создаем поток для отдачи пользователю
+//            InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(baos.toByteArray()));
+//
+//            return ResponseEntity.ok()
+//                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + asciiFilename + "\"")
+//                    .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+//                    .body(resource);
+//        } catch (IOException e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error generating CSV file.");
+//        }
+//    }
 
 }

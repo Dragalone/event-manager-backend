@@ -70,11 +70,15 @@ dependencies {
     implementation("org.apache.poi:poi-ooxml:5.2.3")
     implementation("org.jxls:jxls:2.12.0")
 
+    testImplementation("org.testcontainers:postgresql")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.postgresql:postgresql")
 
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
-
 }
 

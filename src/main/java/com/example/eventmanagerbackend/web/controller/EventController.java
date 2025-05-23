@@ -36,7 +36,6 @@ import java.util.UUID;
 public class EventController {
     private final EventService eventService;
 
-    //TODO Сделать нормальную защиту эндпоинта filterBy
     @GetMapping
     public ResponseEntity<ModelListResponse<EventResponse>> filterBy(@Valid PaginationRequest paginationRequest,
                                                                      @Nullable @RequestParam String name,

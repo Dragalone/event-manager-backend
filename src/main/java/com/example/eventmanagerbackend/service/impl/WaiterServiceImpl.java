@@ -56,8 +56,6 @@ public class WaiterServiceImpl implements WaiterService {
                                 (entityRequest)));
     }
 
-    //TODO
-    //Хер знает оно надо ваще или нет
     @Override
     public WaiterResponse update(UUID id, WaiterRequest entityRequest) {
         log.info("Updating waiter with ID {}", id);

@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/email")
+@RequestMapping("api/v1/email")
 @CrossOrigin()
 @RequiredArgsConstructor
 public class EmailController {
