@@ -74,6 +74,12 @@ public class EmailService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         MessageFormat.format("Event with ID {0} not found!", eventMember.getEvent().getId())
                 ));
+
+        DateTimeFormatter formatter = DateTimeFormatter
+                .ofPattern("dd.MM.yyyy")
+                .withZone(ZoneId.of("Europe/Moscow"));
+        String formattedEventDate = formatter.format(event.getDate());
+
         Map<String, Object> pdfContext = new HashMap<>();
         pdfContext.put("memberId", eventMember.getId());
         pdfContext.put("имя", eventMember.getFirstname());
@@ -84,10 +90,11 @@ public class EmailService {
         pdfContext.put("должность", eventMember.getPosition());
         pdfContext.put("организация", eventMember.getCompany());
         pdfContext.put("статус", eventMember.getStatus().getStatus());
-        pdfContext.put("ивент_дата", event.getDate());
+        pdfContext.put("ивент_дата",formattedEventDate);
         pdfContext.put("ивент_имя", event.getName());
         pdfContext.put("ивент_описание", event.getSummary());
         pdfContext.put("ивент_адрес", event.getAddress());
+        pdfContext.put("eventId", event.getId());
 
         //ByteArrayInputStream bis = documentService.generatePdf("qr.png", eventMember, eventService.findById(eventMember.getEventId()));
 
@@ -109,10 +116,6 @@ public class EmailService {
             templateContent = templateOpt.get().getTemptext(); // Получаем содержимое шаблона из базы данных
         }
 
-        DateTimeFormatter formatter = DateTimeFormatter
-                .ofPattern("dd.MM.yyyy")
-                .withZone(ZoneId.of("Europe/Moscow"));
-        String formattedEventDate = formatter.format(event.getDate());
 
         // Вся инфа об участнике поступает в template
         templateContext.put("имя", eventMember.getFirstname());

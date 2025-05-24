@@ -94,7 +94,8 @@ public class DocumentService {
                 templateContent = templateOpt.get().getTemptext();
             }
         }
-        String url = baseUrl + "event-member-info/" + context.get("memberId");
+
+        String url = baseUrl + context.get("eventId") + "/members/" + context.get("memberId") + "/status";
         BufferedImage qrCodeImage = qrCodeGenerator.generateQrCode(url);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
