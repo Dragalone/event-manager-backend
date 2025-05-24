@@ -32,8 +32,6 @@ services:
     image: dragalone/quickreg-frontend:latest
     ports:
       - "8081:80"
-    volumes:
-      - ./vhost.conf:/etc/nginx/nginx.conf
     depends_on:
       - event-manager-backend
       - postgres
