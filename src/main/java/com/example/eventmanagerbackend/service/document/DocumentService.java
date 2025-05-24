@@ -58,7 +58,11 @@ public class DocumentService {
 
     private final String baseUrl;
 
-    public DocumentService(@Value("${base-url}") String baseUrl, TemplateService templateService, EventRepository eventRepository, EventMemberRepository eventMemberRepository, SpringTemplateEngine templateEngine) {
+    public DocumentService(@Value("${base-url}") String baseUrl,
+                           TemplateService templateService,
+                           EventRepository eventRepository,
+                           EventMemberRepository eventMemberRepository,
+                           SpringTemplateEngine templateEngine) {
         this.baseUrl = baseUrl;
         this.templateService = templateService;
         this.eventRepository = eventRepository;
