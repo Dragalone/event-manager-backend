@@ -11,7 +11,7 @@ services:
       - POSTGRES_DB=event
       - PGDATA=/var/lib/postgresql/data
     volumes:
-      - ./pg-data:/var/lib/postgresql/data
+      - /var/lib/pgsqlquickreg/data:/var/lib/postgresql/data
     restart: always
     networks:
       - dev
