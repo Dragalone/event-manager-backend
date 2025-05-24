@@ -22,6 +22,7 @@ import com.lowagie.text.pdf.BaseFont;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -56,6 +57,10 @@ public class DocumentService {
     private final SpringTemplateEngine templateEngine;
 
     private final String templatesPath = "templates/";
+
+    @Value("${base-url}")
+    private final String baseUrl;
+
     public ByteArrayInputStream generatePdfQrReport(Map<String, Object> context)
             throws DocumentException, IOException {
 
@@ -79,7 +84,7 @@ public class DocumentService {
                 templateContent = templateOpt.get().getTemptext();
             }
         }
-        String url = "http://mkrit.ru/event-member-info/" + context.get("memberId");
+        String url = baseUrl + "event-member-info/" + context.get("memberId");
         BufferedImage qrCodeImage = qrCodeGenerator.generateQrCode(url);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

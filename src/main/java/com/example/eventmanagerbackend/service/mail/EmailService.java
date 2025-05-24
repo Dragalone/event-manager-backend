@@ -40,6 +40,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -106,6 +108,12 @@ public class EmailService {
         } else {
             templateContent = templateOpt.get().getTemptext(); // Получаем содержимое шаблона из базы данных
         }
+
+        DateTimeFormatter formatter = DateTimeFormatter
+                .ofPattern("dd.MM.yyyy")
+                .withZone(ZoneId.of("Europe/Moscow"));
+        String formattedEventDate = formatter.format(event.getDate());
+
         // Вся инфа об участнике поступает в template
         templateContext.put("имя", eventMember.getFirstname());
         templateContext.put("отчество", eventMember.getMiddlename());
@@ -116,7 +124,7 @@ public class EmailService {
         templateContext.put("организация", eventMember.getCompany());
         templateContext.put("статус", eventMember.getStatus().getStatus());
         templateContext.put("memberId", eventMember.getId());
-        templateContext.put("ивент_дата", event.getDate());
+        templateContext.put("ивент_дата", formattedEventDate);
         templateContext.put("ивент_имя", event.getName());
         templateContext.put("ивент_описание", event.getSummary());
         templateContext.put("ивент_адрес", event.getAddress());

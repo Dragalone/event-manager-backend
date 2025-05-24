@@ -46,4 +46,6 @@ logging:
         web: DEBUG
         security: DEBUG
 
+base-url: 'https://quickreg.icydevelop.ru/'
+
 interval-delete-event-cron: '*/10 * * * * *'
