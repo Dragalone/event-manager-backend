@@ -46,10 +46,8 @@ import java.util.*;
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Service
-@RequiredArgsConstructor
 public class DocumentService {
 
-    private final EventService eventService;
     private final TemplateService templateService;
     private final String BADGE_TEMPLATE_PATH = "src/main/resources/static/badge_template.docx";
     private final EventRepository eventRepository;
@@ -58,8 +56,16 @@ public class DocumentService {
 
     private final String templatesPath = "templates/";
 
-    @Value("${base-url}")
     private final String baseUrl;
+
+    public DocumentService(@Value("${base-url}") String baseUrl, TemplateService templateService, EventRepository eventRepository, EventMemberRepository eventMemberRepository, SpringTemplateEngine templateEngine) {
+        this.baseUrl = baseUrl;
+        this.templateService = templateService;
+        this.eventRepository = eventRepository;
+        this.eventMemberRepository = eventMemberRepository;
+        this.templateEngine = templateEngine;
+    }
+
 
     public ByteArrayInputStream generatePdfQrReport(Map<String, Object> context)
             throws DocumentException, IOException {
