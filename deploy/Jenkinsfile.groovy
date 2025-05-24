@@ -16,17 +16,17 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: '8ca74603-54b9-47f0-9357-fd63d74c848d', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                         sh "docker login -u ${env.USERNAME} -p ${env.PASSWORD}"
-                        sh "docker build -t quickreg-backend -f Dockerfile ."
+                        sh "docker build -t quickreg-backend -f deploy/Dockerfile ."
                         sh "docker tag quickreg-backend dragalone/quickreg-backend:latest"
                         sh "docker push dragalone/quickreg-backend:latest"
-
                     }
                 }
             }
         }
         stage('Deploy'){
             steps {
-                sh "docker-compose up -d --force-recreate event-manager-backend"
+                sh "docker compose -f deploy/docker-compose.yml up -d"
+                sh "docker compose -f deploy/docker-compose.yml up -d --force-recreate event-manager-backend"
             }
         }
     }
