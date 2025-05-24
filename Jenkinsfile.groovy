@@ -1,8 +1,5 @@
 pipeline {
     agent any
-    tools {
-        gradle 'gradle'
-    }
     stages {
         stage('Git Checkout') {
             steps {
@@ -11,7 +8,6 @@ pipeline {
         }
         stage('Build'){
             steps {
-                sh "gradle -q javaToolchains"
                 sh "./gradlew clean build -x test"
             }
         }
@@ -26,6 +22,11 @@ pipeline {
 
                     }
                 }
+            }
+        }
+        stage('Deploy'){
+            steps {
+                sh "docker-compose up -d --force-recreate event-manager-backend"
             }
         }
     }

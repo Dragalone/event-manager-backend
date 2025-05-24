@@ -6,8 +6,8 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=admin
+      - POSTGRES_USER=eventsiac
+      - POSTGRES_PASSWORD=GxWZNyDrSw6E9TnqA3UauV
       - POSTGRES_DB=event
       - PGDATA=/var/lib/postgresql/data
     volumes:
@@ -20,14 +20,16 @@ services:
 #    build:
 #      context: ../
 #      dockerfile: Dockerfile
+    security_opt:
+      - seccomp:unconfined
     ports:
       - "8080:8080"
     depends_on:
       - postgres
     networks:
       - dev
-  nginx-vue:
-    image: dragalone/quickreg-backend:latest
+  event-manager-frontend:
+    image: dragalone/quickreg-frontend:latest
     ports:
       - "8081:80"
     volumes:
