@@ -7,7 +7,7 @@ spring:
   application:
     name: events
   datasource:
-    url: jdbc:postgresql://localhost:5432/event
+    url: jdbc:postgresql://postgres:5432/event
     username: eventsiac
     password: GxWZNyDrSw6E9TnqA3UauV
     driver-class-name: org.postgresql.Driver
